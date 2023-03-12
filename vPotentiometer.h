@@ -97,7 +97,7 @@ class vPotentiometer
     if (old_size != size)
       {
 	screen->fillCircle(old_pos_X, old_pos_Y, old_size, background_color);
-	screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + ((size*700)>>9), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
+	screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
 	refresh_text = true;
 	screen->fillCircle(pos_X, pos_Y, size, color);	
 	screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
@@ -107,7 +107,7 @@ class vPotentiometer
 	old_value = value;
 	old_size = size;
       }
-    if (old_pos_X != pos_X || old_pos_Y != pos_Y)
+   else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
       {
 	screen->fillCircle(old_pos_X, old_pos_Y, size, background_color);
 	screen->fillCircle(pos_X, pos_Y, size, color);
@@ -128,7 +128,7 @@ class vPotentiometer
 	screen->fillCircle(pos_X, pos_Y, size, color);
 	screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
 	drawLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + ((size*700)>>9));
+	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
 	screen->setTextColor(color);
 	screen->print(text);
 	old_color = color;
@@ -136,9 +136,9 @@ class vPotentiometer
 
     if (refresh_text)
       {
-	screen->fillRect(pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), pos_Y + ((size*700)>>9), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
+	screen->fillRect(pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), pos_Y + size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
 	  
-	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + ((size*700)>>9));
+	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
 	screen->setTextColor(color);
 	screen->print(text);
 	refresh_text = false;
