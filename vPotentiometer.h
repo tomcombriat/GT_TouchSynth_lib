@@ -3,11 +3,17 @@
 
 /****
  * Visual representation of a potentiometer.
+ * TODO:
+ * - modularize more the existing one
+ * - make a virtual class for a model for different implementation
+ * - allow text size to be changed
+ * - implement necessary getters
+ * - implement hit box
  */
 
-
+/*
 #define INNER_DISC 220
-#define INDICATOR_LENGTH 210
+#define INDICATOR_LENGTH 210*/
 #define TEXT_BASE_SIZE 6
 //#define MAX_STRING_LENGTH 10
 
@@ -25,15 +31,12 @@ class vPotentiometer
   /** Constructor
       @param _screen is the pointer toward a screen
   */
-  vPotentiometer(Adafruit_ILI9341* _screen){
-    screen = _screen;
-  }
+  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; }
   
   /** Set the size of the visual potentiometer
       @param _size the new size
   */
   void setSize(int16_t _size) {
-    old_size = size;
     size = _size;
     max_string_length = (size<<1)/TEXT_BASE_SIZE;
   }
@@ -42,19 +45,12 @@ class vPotentiometer
       @param X the X position
       @param Y the Y position
   */
-  void setPosition(int16_t X, int16_t Y){
-    old_pos_X = pos_X;
-    old_pos_Y = pos_Y;
-    pos_X = X; pos_Y = Y;
-  }
+  void setPosition(int16_t X, int16_t Y){pos_X = X; pos_Y = Y;}
 
   /** Set the value displayed by the visual potentiometer
       @param _value the displayed value (in 8 bits)
   */
-  void setValue(uint8_t _value) {
-    old_value = value;
-    value = _value;
-  }
+  void setValue(uint8_t _value) {value = _value;}
 
   /** Set the value displayed by the visual potentiometer
       @param _value the value of depth over 8bits
@@ -86,6 +82,11 @@ class vPotentiometer
 	  }
 	else text = _text;
   }
+
+  /** Set the size of the text of the potentiometer
+      @param _text_size the new text size
+  */
+  void setTextSize(uint8_t _text_size) {text_size = _text_size;}
   
 
   /** Update the display of the visual potentiometer if needed
@@ -148,18 +149,26 @@ class vPotentiometer
 
 
  private:
-  int16_t pos_X, pos_Y, size;
-  int16_t old_pos_X, old_pos_Y, old_size;
-  uint16_t color, old_color, background_color;
-  uint8_t value;
-  uint8_t old_value;
-  uint8_t max_string_length;
-  static const byte NBit=8;
+  /// Mandatory members for derivatives
   Adafruit_ILI9341 * screen;
+  int16_t pos_X, pos_Y, size;
+  uint8_t value, text_size;
+  uint16_t color, background_color;
+  static const byte NBit=8;
   bool visible;
   String text;
+
+  /// Members of this implementation
+  int16_t old_pos_X, old_pos_Y, old_size;
+  uint16_t old_color;  
+  uint8_t old_value;
+  uint8_t max_string_length;
   bool refresh_text;
 
+  static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210;
+
+
+  //// Custom functions
   void drawLineAngle(int16_t x0,int16_t  y0,uint8_t angle,int16_t length,uint16_t color)
   {
     angle =((uint16_t(angle) *195) >> 8) +30;
