@@ -4,16 +4,15 @@
 /****
  * Visual representation of a potentiometer.
  * TODO:
- * - modularize more the existing one
- * - make a virtual class for a model for different implementation
  * - allow text size to be changed
  * - implement necessary getters
  * - implement hit box
+ * - setter for delay
  */
 
 /*
-#define INNER_DISC 220
-#define INDICATOR_LENGTH 210*/
+  #define INNER_DISC 220
+  #define INDICATOR_LENGTH 210*/
 #define TEXT_BASE_SIZE 6
 //#define MAX_STRING_LENGTH 10
 
@@ -23,15 +22,81 @@
 #include <tables/cosphase256_int8.h>   // Mozzi
 #include <Adafruit_GFX.h>
 
-/** A visual representation of a potentiometer
+
+/** A virtual class for different kinds of potentiometers
  */
-class vPotentiometer
+template<typename T>
+class vPotentiometer  
 {
- public:
+public:
+  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; NBit = sizeof(T)<<3; update_delay = 2000;}
+
+  /** Set the size of the visual potentiometer
+      @param _size the new size
+  */
+  void setSize(int16_t _size) {size = _size;}
+  
+  /** Set the position of the visual potentiometer
+      @param X the X position
+      @param Y the Y position
+  */
+  void setPosition(int16_t X, int16_t Y){pos_X = X; pos_Y = Y;}
+  
+  /** Set the value displayed by the visual potentiometer
+      @param _value the value of depth over full range of the potentiometer
+  */
+  void setValue(T _value) {value = _value;}
+
+  
+  /** Set the value displayed by the visual potentiometer
+      @param _value the value of depth over Nbits
+      @param inputBit the depth of the inputted value
+  */
+  template<typename T2>
+  void setValue(T2 _value, byte inputNBit)
+  {
+    if (inputNBit > NBit)  value = _value >> (inputNBit - NBit);
+    else if (inputNBit < NBit) value = _value >> ( NBit - inputNBit);
+    else value = _value;
+  }
+
+  /** Set the color of the visual potentiometer
+      @param _color the new color
+  */
+  void setColor(uint16_t _color) {color = _color;}
+
+  /** Set the background color of the visual potentiometer (ie the color if the potentiometer was not here)
+      @param _color the new background color
+  */
+  void setBackgroundColor(uint16_t _color)  {background_color = _color;}
+  void setText(String _text) {text = _text;}
+  virtual void update(){};
+
+protected:
+  Adafruit_ILI9341 * screen;
+  int16_t pos_X, pos_Y, size;
+  uint16_t value, text_size;
+  uint16_t color, background_color;
+  byte NBit;
+  bool visible;
+  String text;
+  unsigned long update_delay, last_update;
+};
+
+
+
+
+
+
+/** A classic visual representation of a potentiometer
+ */
+class ClassicPot: public vPotentiometer<uint8_t>
+{
+public:
   /** Constructor
       @param _screen is the pointer toward a screen
   */
-  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; }
+  ClassicPot(Adafruit_ILI9341* _screen): vPotentiometer(_screen){}
   
   /** Set the size of the visual potentiometer
       @param _size the new size
@@ -41,46 +106,13 @@ class vPotentiometer
     max_string_length = (size<<1)/TEXT_BASE_SIZE;
   }
 
-  /** Set the position of the visual potentiometer
-      @param X the X position
-      @param Y the Y position
-  */
-  void setPosition(int16_t X, int16_t Y){pos_X = X; pos_Y = Y;}
-
-  /** Set the value displayed by the visual potentiometer
-      @param _value the displayed value (in 8 bits)
-  */
-  void setValue(uint8_t _value) {value = _value;}
-
-  /** Set the value displayed by the visual potentiometer
-      @param _value the value of depth over 8bits
-      @param inputBit the depth of the inputted value
-  */
-  template<typename T>
-    void setValue(T _value, byte inputBit)
-    {
-      value = _value >> (inputBit - NBit);
-    }
-
-  /** Set the color of the visual potentiometer
-      @param _color the new color
-  */
-  void setColor(uint16_t _color) {color = _color;}
-
-  
-
-  /** Set the background color of the visual potentiometer (ie the color if the potentiometer was not here)
-      @param _color the new background color
-  */
-  void setBackgroundColor(uint16_t _color)  {background_color = _color;}
-
   void setText(String _text) {
     refresh_text = true;
-    	if (_text.length() > max_string_length)
-	  {
-	    text = _text.substring(0,max_string_length-1) + ".";
-	  }
-	else text = _text;
+    if (_text.length() > max_string_length)
+      {
+	text = _text.substring(0,max_string_length-1) + ".";
+      }
+    else text = _text;
   }
 
   /** Set the size of the text of the potentiometer
@@ -94,70 +126,58 @@ class vPotentiometer
   */
   void update()
   {
-    /// TODO: PUT REPETITIONS IN FUNCTION
-    if (old_size != size)
+    if (millis() - last_update > update_delay)
       {
-	screen->fillCircle(old_pos_X, old_pos_Y, old_size, background_color);
-	screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
-	refresh_text = true;
-	screen->fillCircle(pos_X, pos_Y, size, color);	
-	screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
-	drawLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	last_update += update_delay;
+	  if (old_size != size)
+	    {
+	      screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
+	      refresh_text = true;
+	      eraseAndDrawContour();  // delete and redraw the contour
+	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);  // draw the indicator
+	    }
+	  else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
+	    {
+	      eraseAndDrawContour();
+	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	    }
+	  else if (old_value != value)
+	    {
+	      drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
+	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	      old_value = value;	     
+	    }
+	  else if (old_color != color)
+	    {
+	      screen->fillCircle(pos_X, pos_Y, size, color);
+	      screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
+	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	      screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
+	      screen->setTextColor(color);
+	      screen->print(text);
+	    }
+
+	if (refresh_text)
+	  {
+	    screen->fillRect(pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), pos_Y + size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);	  
+	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
+	    screen->setTextColor(color);
+	    screen->print(text);
+	    refresh_text = false;
+	  }
+
+    
 	old_pos_X = pos_X;
 	old_pos_Y = pos_Y;
 	old_value = value;
 	old_size = size;
-      }
-   else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
-      {
-	screen->fillCircle(old_pos_X, old_pos_Y, size, background_color);
-	screen->fillCircle(pos_X, pos_Y, size, color);
-	screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
-	drawLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	old_pos_X = pos_X;
-	old_pos_Y = pos_Y;
-	old_value = value;
-      }
-    else if (old_value != value)
-      {
-	drawLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);
-	drawLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	old_value = value;	     
-      }
-    else if (old_color != color)
-      {
-	screen->fillCircle(pos_X, pos_Y, size, color);
-	screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
-	drawLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
-	screen->setTextColor(color);
-	screen->print(text);
 	old_color = color;
-      }
-
-    if (refresh_text)
-      {
-	screen->fillRect(pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), pos_Y + size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);
-	  
-	screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
-	screen->setTextColor(color);
-	screen->print(text);
-	refresh_text = false;
       }
   }
 
 
 
- private:
-  /// Mandatory members for derivatives
-  Adafruit_ILI9341 * screen;
-  int16_t pos_X, pos_Y, size;
-  uint8_t value, text_size;
-  uint16_t color, background_color;
-  static const byte NBit=8;
-  bool visible;
-  String text;
-
+private:
   /// Members of this implementation
   int16_t old_pos_X, old_pos_Y, old_size;
   uint16_t old_color;  
@@ -165,14 +185,29 @@ class vPotentiometer
   uint8_t max_string_length;
   bool refresh_text;
 
-  static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210;
+  static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210, INDICATOR_WIDTH=20;
 
 
   //// Custom functions
-  void drawLineAngle(int16_t x0,int16_t  y0,uint8_t angle,int16_t length,uint16_t color)
-  {
-    angle =((uint16_t(angle) *195) >> 8) +30;
+  void drawLineAngle(int16_t x0,int16_t  y0,uint8_t value,int16_t length,uint16_t color)
+  {    
+    uint8_t angle =((value *195) >> 8) +30;
     screen->drawLine(x0,y0,x0 -((length * SIN256_DATA[angle]) >> (NBit-1)), y0 + ((length * COSPHASE256_DATA[angle]) >> (NBit-1)),color);
+  }
+
+  void drawFatLineAngle(int16_t x0,int16_t  y0,uint8_t value,int16_t length,uint16_t color)
+  {
+    uint8_t angle =((value *195) >> 8) +30;
+    int width = (size * INDICATOR_WIDTH)>>8;
+    
+    for (int i=-width/2; i<=width/2;i++) drawLineAngle( x0+((i*COSPHASE256_DATA[angle])>>(NBit-1)),  y0+((i*SIN256_DATA[angle])>>(NBit-1)), value, length, color);      
+  }
+  
+  void eraseAndDrawContour()
+  {
+    screen->fillCircle(old_pos_X, old_pos_Y, old_size, background_color);
+    screen->fillCircle(pos_X, pos_Y, size, color);
+    screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
   }
   
 
