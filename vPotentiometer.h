@@ -29,7 +29,7 @@ template<typename T>
 class vPotentiometer  
 {
 public:
-  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; NBit = sizeof(T)<<3; update_delay = 2000;}
+  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; NBit = sizeof(T)<<3; update_delay = 50;}
 
   /** Set the size of the visual potentiometer
       @param _size the new size
@@ -128,7 +128,7 @@ public:
   {
     if (millis() - last_update > update_delay)
       {
-	last_update += update_delay;
+	last_update += update_delay;  // à la fin
 	  if (old_size != size)
 	    {
 	      screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
