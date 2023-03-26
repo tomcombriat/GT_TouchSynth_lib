@@ -82,7 +82,7 @@ public:
   /** Set the time between each actual refresh of the object
       @param delay: the new refresh time
   */
-  void setRefreshTime(unsigned long delay) {update_delay = delay};
+  void setRefreshTime(unsigned long delay) {update_delay = delay;}
   
   void setText(String _text) {text = _text;}
   virtual void update(){};
