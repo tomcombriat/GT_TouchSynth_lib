@@ -53,15 +53,8 @@ public:
       @param inputBit the depth of the inputted value
   */
   template<typename T2>
-  void setValue(T2 _value, byte inputNBit=sizeof(T)>>3)
-  {
-    /*
-    if (inputNBit > NBit)  value = _value >> (inputNBit - NBit);
-    else if (inputNBit < NBit) value = _value >> ( NBit - inputNBit);
-    else value = _value;
-    */
-    value = scale<T2,T>(_value,inputNBit);
-  }
+  void setValue(T2 _value, byte inputNBit=sizeof(T2)>>3) {value = scale<T2,T>(_value,inputNBit, NBit);}
+  
 
   /** Set the color of the visual potentiometer
       @param _color the new color
@@ -152,7 +145,7 @@ public:
       {
 	if (parameter != NULL)
 	  {
-	    setValue(parameter->getValue(), parameter->getNbit());
+	    setValue(parameter->getValue(),parameter->getNBit());
 	  }
 	if (old_size != size)
 	  {

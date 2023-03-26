@@ -29,7 +29,7 @@ class Parameter
 @return T value
   */
   template<typename T>
-    T getValue(byte outputNBits = sizeof(T)>>3)  {return scale<int,T>(value, NBit, outputNBits);}
+    T getValue(byte outputNBits = sizeof(T)<<3)  {return scale<int,T>(value, NBit, outputNBits);}
 
   /** Set the value of the parameter
 @param int _value the new value of the parameter
@@ -38,9 +38,9 @@ class Parameter
 
     
   template<typename T2>
-    void setValue(T2 _value, byte inputNBit = sizeof(T2)>>3) {value = scale<T2,int>(_value, inputNBit, NBit);}
+    void setValue(T2 _value, byte inputNBit = sizeof(T2)<<3) {value = scale<T2,int>(_value, inputNBit, NBit);}
   
-  byte getNbit(){return NBit;}
+  byte getNBit(){return NBit;}
 
  private:
   byte NBit;
