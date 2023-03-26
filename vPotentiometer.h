@@ -143,10 +143,8 @@ public:
   {
     if (millis() - last_update > update_delay)
       {
-	if (parameter != NULL)
-	  {
-	    setValue(parameter->getValue(),parameter->getNBit());
-	  }
+	if (parameter != NULL) setValue(parameter->getValue(),parameter->getNBit());
+	  
 	if (old_size != size)
 	  {
 	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
