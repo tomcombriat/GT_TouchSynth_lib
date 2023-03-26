@@ -68,6 +68,11 @@ public:
   /** Set the background color of the visual potentiometer (ie the color if the potentiometer was not here)
       @param _color the new background color
   */
+
+  bool isInHitBox(int16_t X, int16_t Y){
+    if (X > pos_X - (size>>1) && X <pos_X +(size>>1) && Y>pos_Y - (size>>1) && Y < pos_Y + (size>>1)) return true;
+    else return false;
+  }
   void setBackgroundColor(uint16_t _color)  {background_color = _color;}
   void setText(String _text) {text = _text;}
   virtual void update(){};
@@ -127,8 +132,7 @@ public:
   void update()
   {
     if (millis() - last_update > update_delay)
-      {
-	last_update += update_delay;  // à la fin
+      {	
 	  if (old_size != size)
 	    {
 	      screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
@@ -172,6 +176,8 @@ public:
 	old_value = value;
 	old_size = size;
 	old_color = color;
+
+	last_update = millis();  
       }
   }
 
