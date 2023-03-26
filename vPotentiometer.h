@@ -6,7 +6,6 @@
  * TODO:
  * - allow text size to be changed
  * - implement necessary getters
- * - implement hit box
  * - setter for delay
  */
 
@@ -68,12 +67,23 @@ public:
   /** Set the background color of the visual potentiometer (ie the color if the potentiometer was not here)
       @param _color the new background color
   */
+  void setBackgroundColor(uint16_t _color)  {background_color = _color;}
 
+  /** Probe if a point (X,Y) is touching the object
+      @param X the horinzontal position of the point
+      @param Y the vertical position of the point
+      @return boolean telling if the point is touching the object
+  */
   bool isInHitBox(int16_t X, int16_t Y){
     if (X > pos_X - (size>>1) && X <pos_X +(size>>1) && Y>pos_Y - (size>>1) && Y < pos_Y + (size>>1)) return true;
     else return false;
   }
-  void setBackgroundColor(uint16_t _color)  {background_color = _color;}
+
+  /** Set the time between each actual refresh of the object
+      @param delay: the new refresh time
+  */
+  void setRefreshTime(unsigned long delay) {update_delay = delay};
+  
   void setText(String _text) {text = _text;}
   virtual void update(){};
 
@@ -133,33 +143,33 @@ public:
   {
     if (millis() - last_update > update_delay)
       {	
-	  if (old_size != size)
-	    {
-	      screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
-	      refresh_text = true;
-	      eraseAndDrawContour();  // delete and redraw the contour
-	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);  // draw the indicator
-	    }
-	  else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
-	    {
-	      eraseAndDrawContour();
-	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	    }
-	  else if (old_value != value)
-	    {
-	      drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
-	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	      old_value = value;	     
-	    }
-	  else if (old_color != color)
-	    {
-	      screen->fillCircle(pos_X, pos_Y, size, color);
-	      screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
-	      drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	      screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
-	      screen->setTextColor(color);
-	      screen->print(text);
-	    }
+	if (old_size != size)
+	  {
+	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
+	    refresh_text = true;
+	    eraseAndDrawContour();  // delete and redraw the contour
+	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);  // draw the indicator
+	  }
+	else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
+	  {
+	    eraseAndDrawContour();
+	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	  }
+	else if (old_value != value)
+	  {
+	    drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
+	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	    old_value = value;	     
+	  }
+	else if (old_color != color)
+	  {
+	    screen->fillCircle(pos_X, pos_Y, size, color);
+	    screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
+	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
+	    screen->setTextColor(color);
+	    screen->print(text);
+	  }
 
 	if (refresh_text)
 	  {
