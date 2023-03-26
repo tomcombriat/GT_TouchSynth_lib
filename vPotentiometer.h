@@ -20,6 +20,7 @@
 #include <tables/sin256_int8.h>   // Mozzi
 #include <tables/cosphase256_int8.h>   // Mozzi
 #include <Adafruit_GFX.h>
+#include "Parameter.h"
 
 
 /** A virtual class for different kinds of potentiometers
@@ -52,11 +53,14 @@ public:
       @param inputBit the depth of the inputted value
   */
   template<typename T2>
-  void setValue(T2 _value, byte inputNBit)
+  void setValue(T2 _value, byte inputNBit=sizeof(T)>>3)
   {
+    /*
     if (inputNBit > NBit)  value = _value >> (inputNBit - NBit);
     else if (inputNBit < NBit) value = _value >> ( NBit - inputNBit);
     else value = _value;
+    */
+    value = scale<T2,T>(_value,inputNBit);
   }
 
   /** Set the color of the visual potentiometer
@@ -83,6 +87,8 @@ public:
       @param delay: the new refresh time
   */
   void setRefreshTime(unsigned long delay) {update_delay = delay;}
+
+  void attachParameter(Parameter * _parameter){parameter = _parameter;}
   
   void setText(String _text) {text = _text;}
   virtual void update(){};
@@ -96,6 +102,7 @@ protected:
   bool visible;
   String text;
   unsigned long update_delay, last_update;
+  Parameter * parameter=NULL;
 };
 
 
@@ -142,7 +149,11 @@ public:
   void update()
   {
     if (millis() - last_update > update_delay)
-      {	
+      {
+	if (parameter != NULL)
+	  {
+	    setValue(parameter->getValue(), parameter->getNbit());
+	  }
 	if (old_size != size)
 	  {
 	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
