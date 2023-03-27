@@ -12,8 +12,8 @@
 /*
   #define INNER_DISC 220
   #define INDICATOR_LENGTH 210*/
-#define TEXT_BASE_WIDTH 8
-#define TEXT_BASE_HEIGHT 6
+#define TEXT_BASE_WIDTH 6 // 5+1 spacing
+#define TEXT_BASE_HEIGHT 7
 //#define MAX_STRING_LENGTH 10
 
 
@@ -131,10 +131,7 @@ public:
   void setText(String _text) {
     long_text = _text;
     refresh_text = true;
-    if (long_text.length() > max_string_length)
-      {
-	text = long_text.substring(0,max_string_length-1) + ".";
-      }
+    if (long_text.length() > max_string_length)	text = long_text.substring(0,max_string_length-1) + ".";
     else text =long_text;
   }
 
@@ -149,7 +146,10 @@ public:
       {
 	if (parameter != NULL) setValue(parameter->getValue(),parameter->getNBit());
 	if (old_parameter != parameter) setText(parameter->getName());
-	  
+
+
+	// LOGIC IS SCREWED: allow everything to be changed at once with no problem: depending on the case, delete everything needed *all at once*, rewrite everything needed *all at once*.
+	
 	if (old_size != size)
 	  {
 	    //screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1), max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_WIDTH+1,background_color); // delete text
@@ -164,12 +164,7 @@ public:
 	    refresh_text = true;
 	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
 	  }
-	else if (old_value != value)
-	  {
-	    drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
-	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	    old_value = value;	     
-	  }
+	
 	else if (old_color != color)
 	  {
 	    screen->fillCircle(pos_X, pos_Y, size, color);
@@ -179,12 +174,21 @@ public:
 	    screen->setTextColor(color);
 	    screen->print(text);
 	  }
+	if (old_value != value)
+	  {
+	    drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
+	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+	    old_value = value;	     
+	  }
+
 
 	if (refresh_text)
 	  {
+	    screen->fillRect(old_pos_X - ((text.length()*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_HEIGHT>>1), (text.length())*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,background_color);
 	    setText(long_text);
-	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1)+1, max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,/*background_color*/256);	  
-	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_WIDTH>>1));
+	    //screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1)+1, max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,/*background_color*/256);
+	    
+	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_HEIGHT>>1));
 	    screen->setTextColor(color);
 	    screen->print(text);
 	    refresh_text = false;
