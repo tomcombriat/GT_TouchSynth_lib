@@ -19,7 +19,7 @@ class Parameter
  public:
   /** Construtor
    */
-  Parameter(byte _NBit=16){NBit = _NBit; value = 0;}
+  Parameter(String _name, byte _NBit=16){name = _name; NBit = _NBit; value = 0;}
   /** Return the value of the parameter
 @return int value
   */
@@ -42,9 +42,12 @@ class Parameter
   
   byte getNBit(){return NBit;}
 
+  String getName(){return name;}
+
  private:
   byte NBit;
   int value;
+  String name;
 };
 
 

@@ -6,13 +6,14 @@
  * TODO:
  * - allow text size to be changed
  * - implement necessary getters
- * - setter for delay
+ * - fix text refresh -> what is the parameter size? Look into adafruit doc
  */
 
 /*
   #define INNER_DISC 220
   #define INDICATOR_LENGTH 210*/
-#define TEXT_BASE_SIZE 6
+#define TEXT_BASE_WIDTH 8
+#define TEXT_BASE_HEIGHT 6
 //#define MAX_STRING_LENGTH 10
 
 
@@ -53,7 +54,7 @@ public:
       @param inputBit the depth of the inputted value
   */
   template<typename T2>
-  void setValue(T2 _value, byte inputNBit=sizeof(T2)>>3) {value = scale<T2,T>(_value,inputNBit, NBit);}
+  void setValue(T2 _value, byte inputNBit=sizeof(T2)<<3) {value = scale<T2,T>(_value,inputNBit, NBit);}
   
 
   /** Set the color of the visual potentiometer
@@ -82,6 +83,12 @@ public:
   void setRefreshTime(unsigned long delay) {update_delay = delay;}
 
   void attachParameter(Parameter * _parameter){parameter = _parameter;}
+
+  
+  /** Set the size of the text of the potentiometer
+      @param _text_size the new text size
+  */
+  void setTextSize(uint8_t _text_size) {text_size = _text_size;}
   
   void setText(String _text) {text = _text;}
   virtual void update(){};
@@ -93,7 +100,7 @@ protected:
   uint16_t color, background_color;
   byte NBit;
   bool visible;
-  String text;
+  String text, long_text;
   unsigned long update_delay, last_update;
   Parameter * parameter=NULL;
 };
@@ -118,22 +125,19 @@ public:
   */
   void setSize(int16_t _size) {
     size = _size;
-    max_string_length = (size<<1)/TEXT_BASE_SIZE;
+    max_string_length = (size<<1)/TEXT_BASE_WIDTH;
   }
 
   void setText(String _text) {
+    long_text = _text;
     refresh_text = true;
-    if (_text.length() > max_string_length)
+    if (long_text.length() > max_string_length)
       {
-	text = _text.substring(0,max_string_length-1) + ".";
+	text = long_text.substring(0,max_string_length-1) + ".";
       }
-    else text = _text;
+    else text =long_text;
   }
 
-  /** Set the size of the text of the potentiometer
-      @param _text_size the new text size
-  */
-  void setTextSize(uint8_t _text_size) {text_size = _text_size;}
   
 
   /** Update the display of the visual potentiometer if needed
@@ -144,17 +148,20 @@ public:
     if (millis() - last_update > update_delay)
       {
 	if (parameter != NULL) setValue(parameter->getValue(),parameter->getNBit());
+	if (old_parameter != parameter) setText(parameter->getName());
 	  
 	if (old_size != size)
 	  {
-	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), old_pos_Y + old_size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color); // delete text
+	    //screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1), max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_WIDTH+1,background_color); // delete text
 	    refresh_text = true;
+	    if (old_parameter != parameter) setText(parameter->getName());
 	    eraseAndDrawContour();  // delete and redraw the contour
 	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);  // draw the indicator
 	  }
 	else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
 	  {
 	    eraseAndDrawContour();
+	    refresh_text = true;
 	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
 	  }
 	else if (old_value != value)
@@ -168,15 +175,16 @@ public:
 	    screen->fillCircle(pos_X, pos_Y, size, color);
 	    screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
 	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
+	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_WIDTH>>1));
 	    screen->setTextColor(color);
 	    screen->print(text);
 	  }
 
 	if (refresh_text)
 	  {
-	    screen->fillRect(pos_X - ((max_string_length*TEXT_BASE_SIZE)>>1), pos_Y + size + (TEXT_BASE_SIZE>>1), max_string_length*TEXT_BASE_SIZE, TEXT_BASE_SIZE+1,background_color);	  
-	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_SIZE>>1)), pos_Y + size + (TEXT_BASE_SIZE>>1));
+	    setText(long_text);
+	    screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1)+1, max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,/*background_color*/256);	  
+	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_WIDTH>>1));
 	    screen->setTextColor(color);
 	    screen->print(text);
 	    refresh_text = false;
@@ -188,6 +196,7 @@ public:
 	old_value = value;
 	old_size = size;
 	old_color = color;
+	old_parameter = parameter;
 
 	last_update = millis();  
       }
@@ -202,6 +211,8 @@ private:
   uint8_t old_value;
   uint8_t max_string_length;
   bool refresh_text;
+  Parameter * old_parameter=NULL;
+  
 
   static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210, INDICATOR_WIDTH=20;
 
