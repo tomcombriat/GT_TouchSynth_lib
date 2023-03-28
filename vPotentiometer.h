@@ -91,6 +91,8 @@ public:
   void setTextSize(uint8_t _text_size) {text_size = _text_size;}
   
   void setText(String _text) {text = _text;}
+
+  virtual void drawAll(){};
   virtual void update(){};
 
 protected:
@@ -148,49 +150,25 @@ public:
 	if (old_parameter != parameter) setText(parameter->getName());
 
 
-	// LOGIC IS SCREWED: allow everything to be changed at once with no problem: depending on the case, delete everything needed *all at once*, rewrite everything needed *all at once*.
-	
-	if (old_size != size)
+	if (old_size != size || old_pos_X != pos_X || old_pos_Y != pos_Y) // refresh everything
 	  {
-	    //screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1), max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_WIDTH+1,background_color); // delete text
-	    refresh_text = true;
-	    if (old_parameter != parameter) setText(parameter->getName());
-	    eraseAndDrawContour();  // delete and redraw the contour
-	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);  // draw the indicator
-	  }
-	else if (old_pos_X != pos_X || old_pos_Y != pos_Y)
-	  {
-	    eraseAndDrawContour();
-	    refresh_text = true;
-	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	  }
-	
-	else if (old_color != color)
-	  {
-	    screen->fillCircle(pos_X, pos_Y, size, color);
-	    screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
-	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_WIDTH>>1));
-	    screen->setTextColor(color);
-	    screen->print(text);
+	    eraseContour();
+	    eraseValue();
+	    eraseText();
+	    drawContour();
+	    drawValue();
+	    drawText();
+	    refresh_text = false;
 	  }
 	if (old_value != value)
 	  {
-	    drawFatLineAngle(pos_X,pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);  // erase old indicator
-	    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
-	    old_value = value;	     
+	    eraseValue();
+	    drawValue();
 	  }
-
-
 	if (refresh_text)
 	  {
-	    screen->fillRect(old_pos_X - ((text.length()*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_HEIGHT>>1), (text.length())*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,background_color);
-	    setText(long_text);
-	    //screen->fillRect(old_pos_X - ((max_string_length*TEXT_BASE_WIDTH)>>1), old_pos_Y + old_size + (TEXT_BASE_WIDTH>>1)+1, max_string_length*TEXT_BASE_WIDTH, TEXT_BASE_HEIGHT,/*background_color*/256);
-	    
-	    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_HEIGHT>>1));
-	    screen->setTextColor(color);
-	    screen->print(text);
+	    eraseText();
+	    drawText();
 	    refresh_text = false;
 	  }
 
@@ -236,16 +214,40 @@ private:
     for (int i=-width/2; i<=width/2;i++) drawLineAngle( x0+((i*COSPHASE256_DATA[angle])>>(NBit-1)),  y0+((i*SIN256_DATA[angle])>>(NBit-1)), value, length, color);      
   }
   
-  void eraseAndDrawContour()
-  {
+
+  void eraseContour(){
     screen->fillCircle(old_pos_X, old_pos_Y, old_size, background_color);
+  }
+
+  void drawContour(){
     screen->fillCircle(pos_X, pos_Y, size, color);
     screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
   }
-  
 
+  void eraseText(){
+    int16_t x1,y1;
+    uint16_t w,h;
+    screen->getTextBounds(text, old_pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)),old_pos_Y + old_size + (TEXT_BASE_HEIGHT>>1),&x1,&y1,&w,&h);
+    screen->fillRect( x1,y1,w,h,background_color);
+  }
+
+  void drawText(){
+    setText(long_text);	    
+    screen->setCursor(pos_X - (text.length()*(TEXT_BASE_WIDTH>>1)), pos_Y + size + (TEXT_BASE_HEIGHT>>1));
+    screen->setTextColor(color);
+    screen->print(text);
+  };
+
+  void eraseValue()
+  {
+    drawFatLineAngle(old_pos_X,old_pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);
+  }
+
+  void drawValue()
+  {
+    drawFatLineAngle(pos_X,pos_Y,value,(size*INDICATOR_LENGTH)>>8,color);
+  }
 };
-
 
 
 
