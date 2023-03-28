@@ -171,7 +171,6 @@ public:
 	    drawText();
 	    refresh_text = false;
 	  }
-
     
 	old_pos_X = pos_X;
 	old_pos_Y = pos_Y;
@@ -184,6 +183,12 @@ public:
       }
   }
 
+  void drawAll() // to be used after a black screen
+  {
+    drawContour();
+    drawValue();
+    drawText();
+  }
 
 
 private:
