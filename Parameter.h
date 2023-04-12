@@ -56,8 +56,11 @@ class Parameter_virt
 
   String getName(){return name;}
 
-  virtual void getValue(){}
+  //  virtual void getValue(){} // why does not this work??
 
+
+  /** Update the parameter from its raw value: apply LUT, scale, etc
+   */
   void update()
   {
     // apply lut, check for changes in bound input
@@ -68,6 +71,31 @@ class Parameter_virt
   int32_t raw_value;   // contains the "working" value, positive 16bits (bigger container for easy scaling)
   String name;
 };
+
+
+
+
+template<typename T>
+class Parameter: public Parameter_virt
+{
+public:
+  Parameter(String _name): Parameter_virt(_name){value = 0;}
+  void update(){
+    Parameter_virt::update();
+    scaleValue();
+  }
+
+  /** Return the value of the parameter
+@return value the value of the parameter
+  */
+  inline T getValue(){return value;}
+  virtual void scaleValue(){}
+private:
+  T value;
+};
+
+template<>
+inline void Parameter<uint8_t>::scaleValue() {value = raw_value>>8;}
 
 
 #endif
