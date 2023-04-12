@@ -82,7 +82,7 @@ public:
   */
   void setRefreshTime(unsigned long delay) {update_delay = delay;}
 
-  void attachParameter(Parameter * _parameter){parameter = _parameter;}
+  void attachParameter(Parameter_virt * _parameter){parameter = _parameter;}
 
   
   /** Set the size of the text of the potentiometer
@@ -104,7 +104,7 @@ protected:
   bool visible;
   String text, long_text;
   unsigned long update_delay, last_update;
-  Parameter * parameter=NULL;
+  Parameter_virt * parameter=NULL;
 };
 
 
@@ -146,7 +146,7 @@ public:
   {
     if (millis() - last_update > update_delay)
       {
-	if (parameter != NULL) setValue(parameter->getValue(),parameter->getNBit());
+	if (parameter != NULL) setValue(parameter->getRawValue(),parameter->getNBit());
 	if (old_parameter != parameter) setText(parameter->getName());
 
 
@@ -198,7 +198,7 @@ private:
   uint8_t old_value;
   uint8_t max_string_length;
   bool refresh_text;
-  Parameter * old_parameter=NULL;
+  Parameter_virt * old_parameter=NULL;
   
 
   static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210, INDICATOR_WIDTH=20;
