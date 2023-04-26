@@ -8,6 +8,7 @@
  * - MIDI inputs (normal and HQ)
  */
 
+#include "scaler.h"
 
 /*
  * This is a virtual class from which every type of input is derived
@@ -18,30 +19,42 @@ class Input
   /** Constructor
    */
   Input(String _name)
-    {
-      name = _name;
-    }
+  {
+    name = _name;
+  }
   
-  /** Get the value of the input
-   */
-  int32_t getValue(){return value;}
+  /** Get the value of the Input
+      @return the value of the Input.
+  */
+  inline int32_t getValue(){return value;}
 
-  /** Get the name of the input
-   */
+  /** Get the name of the Input
+      @return the name of the Input.
+  */
   String getName(){return name;}
 
- protected:
+  /** Update the Input (not needed for every specification)
+   */
+  virtual void update(){}
+
+protected:
   int32_t value;
   String name;
 };
 
-class ADCInput: public Input
+
+/*
+ * This is a specialization for all ADC inputs: potentiometers, expression pedals
+ */
+
+template<byte NBit_ADC=10>
+class AnalogInput: public Input
 {
- public:
-  
-
-
- private:
+public:
+  AnalogInput(String _name, int _pin): Input(_name){pin = _pin;}
+  inline void update(){value = scale(mozziAnalogRead(pin), NBit_ADC, 16);}
+private:
+  int pin;
 };
 
 
