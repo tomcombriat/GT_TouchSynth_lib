@@ -57,6 +57,16 @@ private:
   int pin;
 };
 
+class MidiInput: public Input
+{
+public:
+  MidiInput(String _name, uint8_t _channel=0, uint8_t _control=0): Input(_name){channel = _channel; control = _control;}
+
+
+private:
+  uint8_t channel, control;
+};
+
 
 
 
