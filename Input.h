@@ -16,9 +16,10 @@
 
 class Input
 {
+public:
   /** Constructor
    */
-  Input(String _name)
+    Input(String _name)
   {
     name = _name;
   }
@@ -35,7 +36,7 @@ class Input
 
   /** Update the Input (not needed for every specification)
    */
-  virtual void update(){}
+   virtual void update(){}
 
 protected:
   int32_t value;
@@ -47,12 +48,15 @@ protected:
  * This is a specialization for all ADC inputs: potentiometers, expression pedals
  */
 
-template<byte NBit_ADC=10>
+template<byte NBit_ADC=12>
 class AnalogInput: public Input
 {
 public:
   AnalogInput(String _name, int _pin): Input(_name){pin = _pin;}
-  inline void update(){value = scale(mozziAnalogRead(pin), NBit_ADC, 16);}
+   void update(){
+    value = scale<int16_t, int32_t>(mozziAnalogRead(pin), NBit_ADC, 16);
+    //Serial.println(mozziAnalogRead(pin));
+  }
 private:
   int pin;
 };
