@@ -19,7 +19,7 @@ class Input
 public:
   /** Constructor
    */
-    Input(String _name)
+  Input(String _name)
   {
     name = _name;
   }
@@ -36,7 +36,7 @@ public:
 
   /** Update the Input (not needed for every specification)
    */
-   virtual void update(){}
+  virtual void update(){}
 
 protected:
   int32_t value;
@@ -47,20 +47,33 @@ protected:
 /*
  * This is a specialization for all ADC inputs: potentiometers, expression pedals
  */
-
 template<byte NBit_ADC=12>
 class AnalogInput: public Input
 {
 public:
-  AnalogInput(String _name, int _pin): Input(_name){pin = _pin;}
-   void update(){
-    value = scale<int16_t, int32_t>(mozziAnalogRead(pin), NBit_ADC, 16);
-    //Serial.println(mozziAnalogRead(pin));
+  AnalogInput(String _name, int _pin): Input(_name){
+    pin = _pin;
+    pinMode(pin,INPUT);
   }
+  
+  void update(){
+    int tamp_value = mozziAnalogRead(pin);
+    if (invert) tamp_value=(1<<NBit_ADC)-1 - tamp_value;
+    value = scale<int16_t, int32_t>(tamp_value, NBit_ADC, 16);
+  }
+  
+  void setInvert(bool _invert) {invert = _invert;}
+  
 private:
   int pin;
+  bool invert = false;
 };
 
+
+
+/*
+ * Specialization for single precision MIDI inputs
+ */
 class MidiInput: public Input
 {
 public:
