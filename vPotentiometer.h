@@ -141,6 +141,7 @@ public:
 
   /** Update the display of the visual potentiometer if needed
       @note Timing: around 5-10ms
+      @todo Change to get the *actual* value of the parameter, not the raw one.
   */
   void update()
   {

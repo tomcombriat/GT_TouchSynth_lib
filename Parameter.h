@@ -15,6 +15,7 @@ TOOD:
  - template on the return type (whole class templated ?)
  - internal calculations on int type?
  - how to handle unsigned and signed value neatly?
+ - fix raw value to 16 bits and/or use the Nbit for passing to the screen pot? To test…
 */
 
 
@@ -89,8 +90,8 @@ public:
 @return value the value of the parameter
   */
   inline T getValue(){return value;}
-  virtual void scaleValue(){}
 private:
+  virtual void scaleValue(){}
   T value;
 };
 
