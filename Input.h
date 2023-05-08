@@ -97,9 +97,8 @@ public:
   */
   void setChannel(uint8_t _channel){channel = _channel;}
 
-    /** Set the MIDI control of the parameter
-      @param the new MIDI channel of the parameter
-      @todo dealing with omni?
+  /** Set the MIDI control of the parameter
+      @param the new MIDI control of the parameter
   */
   void setControl(uint8_t _control){control = _control;}
 
@@ -108,9 +107,90 @@ public:
   */
   void setValue(uint8_t _value){value = _value<<9;} // MIDI signals are 7 bits
 
+
+  /** Send a MIDI message complete to the parameter, then it deals with it 
+      @todo maybe use the framework of the MIDI library?
+  */
+  void setMIDIMessage(uint8_t _channel, uint8_t _control, uint8_t _value)
+  {
+    if (_control == control && _channel == channel) setValue(_value);
+  }
+
   
 private:
   uint8_t channel, control;
+};
+
+
+
+
+/**
+ * Specialization for *double* precision MIDI inputs
+ */
+class MidiInputHQ: public GTInput
+{
+public:
+  /** Constructor
+   */
+  MidiInputHQ(String _name, uint8_t _channel=0, uint8_t _controlMSB=0,uint8_t _controlLSB = 0): GTInput(_name){channel = _channel; controlMSB = _controlMSB; controlLSB = _controlLSB;}
+  
+  /** Get the MIDI channel of the parameter
+      @return the MIDI channel
+  */
+  uint8_t getChannel(){return channel;}
+
+  /** Get the MSB (Most Significant byte) MIDI control of the parameter
+      @return the MSB MIDI control
+  */
+  uint8_t getControlMSB(){return controlMSB;}
+
+  /** Get the LSB (Least Significant byte) MIDI control of the parameter
+      @return the LSB MIDI control
+  */
+  uint8_t getControlLSB(){return controlLSB;}
+
+  /** Set the MIDI channel of the parameter
+      @param the new MIDI channel of the parameter
+      @todo dealing with omni?
+  */
+  void setChannel(uint8_t _channel){channel = _channel;}
+
+  /** Set the MSB MIDI control of the parameter
+      @param the new MSB MIDI control of the parameter
+  */
+  void setControlMSB(uint8_t _controlMSB){controlMSB = _controlMSB;}
+
+  /** Set the LSB MIDI control of the parameter
+      @param the new LSB MIDI control of the parameter
+  */
+  void setControlLSB(uint8_t _controlLSB){controlLSB = _controlLSB;}
+
+  /** Set the MSB MIDI value of the parameter, should not be used by the user (protected?)
+      @param the new MSB value of the parameter
+  */
+  void setValueMSB(uint8_t _value){value = _value<<9;} // left align: 7bits for starters
+  // TODO:there are some nice tricks here to be implemented for continuous signals (look 10k codes)
+
+  /** Set the LSB MIDI value of the parameter, should not be used by the user (protected?)
+      @param the new LSB value of the parameter
+  */
+  void setValueLSB(uint8_t _value){value += _value<<2;}
+
+  /** Send a MIDI message complete to the parameter, then it deals with it 
+      @todo maybe use the framework of the MIDI library?
+  */
+  void setMIDIMessage(uint8_t _channel, uint8_t _control, uint8_t _value)
+  {
+    if (_channel == channel)
+      {	
+	if (_control == controlMSB) setValueMSB(_value);
+	else if (_control == controlLSB) setValueLSB(_value);
+      }
+  }
+  
+  
+private:
+  uint8_t channel, controlMSB, controlLSB;
 };
 
 
