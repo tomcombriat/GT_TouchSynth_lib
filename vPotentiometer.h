@@ -209,15 +209,47 @@ private:
   void drawLineAngle(int16_t x0,int16_t  y0,uint8_t value,int16_t length,uint16_t color)
   {    
     uint8_t angle =((value *195) >> 8) +30;
-    screen->drawLine(x0,y0,x0 -((length * SIN256_DATA[angle]) >> (NBit-1)), y0 + ((length * COSPHASE256_DATA[angle]) >> (NBit-1)),color);
+    // SIN and COS table are +/- 7bits, so we need to shift that down
+    screen->drawLine(x0,y0,x0 -((length * SIN256_DATA[angle]) >> 7), y0 + ((length * COSPHASE256_DATA[angle]) >> 7),color);
   }
 
   void drawFatLineAngle(int16_t x0,int16_t  y0,uint8_t value,int16_t length,uint16_t color)
   {
     uint8_t angle =((value *195) >> 8) +30;
-    int width = (size * INDICATOR_WIDTH)>>8;
-    
-    for (int i=-width/2; i<=width/2;i++) drawLineAngle( x0+((i*COSPHASE256_DATA[angle])>>(NBit-1)),  y0+((i*SIN256_DATA[angle])>>(NBit-1)), value, length, color);      
+    int halfWidth = (size * INDICATOR_WIDTH)>>9;
+    drawLineAngle( x0,  y0, value, length, color*2);
+    byte drawCount = 0;
+    int16_t last_x0=x0,last_y0=y0;
+    Serial.println(last_x0);
+    int i = 1;
+    while (drawCount !=halfWidth) // prob : a>>b = -1 quelque soit b et non 0
+      {
+	/*	int16_t new_x0 = last_x0+((i*COSPHASE256_DATA[angle])>>9);
+		int16_t new_y0 = last_y0+((i*SIN256_DATA[angle])>>9);*/
+	int16_t new_x0 = last_x0+((i*COSPHASE256_DATA[angle])>>12);
+	int16_t new_y0 = last_y0+((i*SIN256_DATA[angle])>>12);
+	Serial.print(x0);
+	Serial.print(" ");
+	Serial.print(new_x0);
+	Serial.print(" ");
+	Serial.print(COSPHASE256_DATA[angle]);
+	Serial.print("   ");
+	Serial.print(y0);
+	Serial.print(" ");
+	Serial.print(new_y0);
+	Serial.print(" ");
+	Serial.println(SIN256_DATA[angle]);
+	if ((new_x0 != last_x0) || (new_y0 != last_y0))
+	  {
+	    last_x0 = new_x0;
+	    last_y0 = new_y0;
+	    drawLineAngle( new_y0,  new_y0, value, length, color);
+	    drawCount++;	    
+	  }
+	i++;
+      }
+			      
+	//for (int i=-width/2; i<=width/2;i++) drawLineAngle( x0+((i*COSPHASE256_DATA[angle])>>7),  y0+((i*SIN256_DATA[angle])>>7), value, length, color);      }
   }
   
 
