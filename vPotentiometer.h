@@ -133,7 +133,8 @@ public:
   void setText(String _text) {
     long_text = _text;
     refresh_text = true;
-    if (long_text.length() > max_string_length)	text = long_text.substring(0,max_string_length-1) + ".";
+    //if (long_text.length() > max_string_length)	text = long_text.substring(0,max_string_length-1) + ".";
+    if (long_text.length() > max_string_length)	text = long_text.substring(0,max_string_length);
     else text =long_text;
   }
 
