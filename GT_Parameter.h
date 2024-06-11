@@ -30,7 +30,7 @@ class GT_Parameter
   inline void setValue(int32_t _value, int8_t NBits_input) // assumes unsigned
   {
     _value = GT_shiftR(_value, NBits_input-NBits);
-    if (signedd) _value -= 1<<(NBits-1);	
+    if (signedd) _value -= 1<<(NBits-1);  // might be worth storing this value once for all?	
     value = _value;
   }
 
@@ -73,12 +73,22 @@ class GT_Parameter
   /**
      Set the midi control1 (MSB) the parameter is watching
   */
-  inline void setMidiControl1(byte _control) {midi_control1=_control;}
+  inline void setMidiControl1(byte _control) {
+    midi_control1=_control;
+    if (_control > 127)
+      {
+	midi_control1 = 255;
+	midi_control2 = 255; // disabling both    
+      }
+  }
 
   /**
      Set the midi control2 (LSB) the parameter is watching
   */
-  inline void setMidiControl2(byte _control) {midi_control2=_control;}
+  inline void setMidiControl2(byte _control) {
+    midi_control2=_control;
+    if (_control > 127) midi_control2 = 255;
+  }
 
   /**
      Notify of a MIDI input control change
@@ -97,7 +107,7 @@ class GT_Parameter
 		   from below, we put the LSB to 0 (LSB might come higher, but that makes a monotonic transition) whereas coming from above we do the opposite
 		*/
 		int32_t scaled_value = GT_shiftR((int32_t)_value, 7 - NBits);
-		if (signedd) value += 1<<(NBits-1);
+		if (signedd) value += 1<<(NBits-1); 
 		int32_t masked_old_value = GT_shiftR(127, 7 - NBits) & value;  // keep only the MSB
 		if (scaled_value > masked_old_value)  value = scaled_value;  
 		else if (scaled_value < masked_old_value) value = scaled_value + (GT_shiftR((int32_t)1, 7 - NBits)-1);
@@ -108,7 +118,6 @@ class GT_Parameter
 		   if (scaled_value > masked_old_value)  value = scaled_value;
 		   else value = scaled_value + (GT_shiftR((int32_t)1, 7 - NBits)-1);
 		*/
-		//else value = scaled_value + (GT_shiftR((int32_t)1, 7 - NBits)-1);
 		if (signedd) value -= 1<<(NBits-1);	    
 	      }  // else
 	    
