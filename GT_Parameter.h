@@ -110,7 +110,7 @@ class GT_Parameter
 		if (signedd) value += 1<<(NBits-1); 
 		int32_t masked_old_value = GT_shiftR(127, 7 - NBits) & value;  // keep only the MSB
 		if (scaled_value > masked_old_value)  value = scaled_value;  
-		else if (scaled_value < masked_old_value) value = scaled_value + (GT_shiftR((int32_t)1, 7 - NBits)-1);
+		else if (scaled_value < masked_old_value) value = scaled_value + (GT_shiftR((int32_t)1, 7 - NBits)-1); // LSB to max value (next one is probably lower), MSB to real value.
 		else value = scaled_value + ((GT_shiftR(1,7-NBits)-1) & value); // all this to take into account double send of the same midi signal
 		// ((GT_shiftR(1,7-NBits)-1) & value) is keeping only the LSB, everything else at 0
 
@@ -127,7 +127,7 @@ class GT_Parameter
 	    int32_t scaled_value = GT_shiftR((int32_t)_value, 14 - NBits);
 	    if (signedd) value += 1<<(NBits-1);
 	    value = (GT_shiftR(127, 7 - NBits) & value) + scaled_value;
-	    //      ONLY THE MSB
+	    //        ONLY THE MSB
 	    if (signedd) value -= 1<<(NBits-1);
 	  }  // else if (_control == midi_control2)
       } // if (_channel == midi_channel)
