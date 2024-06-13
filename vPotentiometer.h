@@ -103,7 +103,7 @@ protected:
   byte NBit;
   bool visible;
   String text, long_text;
-  unsigned long update_delay, last_update;
+  unsigned long update_delay, last_update;  // TODO: set update_delay to const, rename response_time
   GT_Parameter * parameter=NULL;
 };
 
