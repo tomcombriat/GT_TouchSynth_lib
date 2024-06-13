@@ -30,7 +30,8 @@ template<typename T>
 class vPotentiometer  
 {
 public:
-  vPotentiometer(Adafruit_ILI9341* _screen){ screen = _screen; NBit = sizeof(T)<<3; update_delay = 50;}
+  vPotentiometer(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
+  {screen = _screen; NBit = sizeof(T)<<3;}
 
   /** Set the size of the visual potentiometer
       @param _size the new size
@@ -80,7 +81,7 @@ public:
   /** Set the time between each actual refresh of the object
       @param delay: the new refresh time
   */
-  void setRefreshTime(unsigned long delay) {update_delay = delay;}
+  // void setRefreshTime(unsigned long delay) {update_delay = delay;}
 
   void attachParameter(GT_Parameter * _parameter){parameter = _parameter;}
 
@@ -103,7 +104,8 @@ protected:
   byte NBit;
   bool visible;
   String text, long_text;
-  unsigned long update_delay, last_update;  // TODO: set update_delay to const, rename response_time
+  unsigned long last_update;  // TODO: set update_delay to const, rename response_time
+  const unsigned long response_time;
   GT_Parameter * parameter=NULL;
 };
 
@@ -146,7 +148,7 @@ public:
   */
   void update()
   {
-    if (millis() - last_update > update_delay)
+    if (millis() - last_update > response_time)
       {
 	//if (parameter != NULL) setValue(parameter->getRawValue(),parameter->getNBit());
 	if (parameter != NULL)
