@@ -21,8 +21,8 @@
 #include <tables/sin256_int8.h>   // Mozzi
 #include <tables/cosphase256_int8.h>   // Mozzi
 #include <Adafruit_GFX.h>
-#include "Parameter.h"
-
+//#include "Parameter.h"
+#include "GT_Parameter.h"
 
 /** A virtual class for different kinds of potentiometers
  */
@@ -82,7 +82,7 @@ public:
   */
   void setRefreshTime(unsigned long delay) {update_delay = delay;}
 
-  void attachParameter(Parameter_virt * _parameter){parameter = _parameter;}
+  void attachParameter(GT_Parameter * _parameter){parameter = _parameter;}
 
   
   /** Set the size of the text of the potentiometer
@@ -104,7 +104,7 @@ protected:
   bool visible;
   String text, long_text;
   unsigned long update_delay, last_update;
-  Parameter_virt * parameter=NULL;
+  GT_Parameter * parameter=NULL;
 };
 
 
@@ -148,7 +148,12 @@ public:
   {
     if (millis() - last_update > update_delay)
       {
-	if (parameter != NULL) setValue(parameter->getRawValue(),parameter->getNBit());
+	//if (parameter != NULL) setValue(parameter->getRawValue(),parameter->getNBit());
+	if (parameter != NULL)
+	  {
+	    int32_t in_value = parameter->getValue() + parameter->getBias();
+	    setValue(in_value, parameter->getNBits());
+	  }
 	if (old_parameter != parameter) setText(parameter->getName());
 
 
@@ -200,7 +205,7 @@ private:
   uint8_t old_value;
   uint8_t max_string_length;
   bool refresh_text;
-  Parameter_virt * old_parameter=NULL;
+  GT_Parameter * old_parameter=NULL;
   
 
   static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210, INDICATOR_WIDTH=20;

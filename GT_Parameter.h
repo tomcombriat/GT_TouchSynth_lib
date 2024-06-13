@@ -1,7 +1,7 @@
 #ifndef GT_PARAMETER_H_
 #define GT_PARAMETER_H_
 
-
+#include "scaler.h"
 
 template<typename T> constexpr T GT_shiftR(T x, int8_t bits) {return (bits > 0 ? (x >> (bits)) : bits < 0 ? (x << (-bits)) : x);}
 
@@ -39,6 +39,16 @@ class GT_Parameter
      Return the name of the parameter
   */
   inline const String getName() {return name;}
+
+  /** 
+Return the number of bits of the parameter
+  */
+  inline const int8_t getNBits() {return NBits;}
+  
+  /**
+Return the bias of the parameter (0 if unsigned)
+  */
+  inline const int32_t getBias() {return bias;}
 
   /**
      Return the max value of the parameter
@@ -146,6 +156,7 @@ class GT_Parameter
   int32_t value;
   const int32_t max_value=(signedd ? 1<<(NBits-1) : 1<<NBits)-1;
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
+  const int32_t bias = (signedd ? min_value : 0);
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
   
 };
