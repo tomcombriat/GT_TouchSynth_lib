@@ -1,5 +1,5 @@
-#ifndef GT_INPUT_H_
-#define GT_INPUT_H_
+#ifndef GT_INPUT_H__OLD
+#define GT_INPUT_H__OLD
 #include <mozzi_analog.h> // for mozziAnalogRead()
 
 /*

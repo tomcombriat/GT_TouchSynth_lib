@@ -122,7 +122,7 @@ public:
   /** Constructor
       @param _screen is the pointer toward a screen
   */
-  ClassicPot(Adafruit_ILI9341* _screen): vPotentiometer(_screen){}
+  ClassicPot(Adafruit_ILI9341* _screen, unsigned long response_time=50): vPotentiometer(_screen){}
   
   /** Set the size of the visual potentiometer
       @param _size the new size
