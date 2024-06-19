@@ -20,7 +20,7 @@ class GT_Parameter
   /**
      Return the value of the parameter
   */
-  inline int32_t getValue() {return value;}
+  inline int32_t getValue() const {return value;}
 
   /**
      Set the value of the parameter
@@ -38,27 +38,27 @@ class GT_Parameter
   /**
      Return the name of the parameter
   */
-  inline const String getName() {return name;}
+  inline const String getName() const {return name;}
 
   /** 
 Return the number of bits of the parameter
   */
-  inline const int8_t getNBits() {return NBits;}
+  inline const int8_t getNBits() const {return NBits;}
   
   /**
 Return the bias of the parameter (0 if unsigned)
   */
-  inline const int32_t getBias() {return bias;}
+  inline const int32_t getBias() const {return bias;}
 
   /**
      Return the max value of the parameter
   */
-  inline const int32_t getMax() {return max_value;}
+  inline const int32_t getMax() const {return max_value;}
   
   /**
      Return the min value of the parameter
   */
-  inline const int32_t getMin() {return min_value;}
+  inline const int32_t getMin() const {return min_value;}
 
   /**
      Return the midi channel the parameter is watching
@@ -68,12 +68,12 @@ Return the bias of the parameter (0 if unsigned)
   /**
      Return the midi control1 (MSB) the parameter is watching
   */
-  inline byte getMidiControl1() {return midi_control1;}
+  inline byte getMidiControl1() const {return midi_control1;}
 
   /**
      Return the midi control2 (LSB) the parameter is watching
   */
-  inline byte getMidiControl2() {return midi_control2;}
+  inline byte getMidiControl2() const {return midi_control2;}
 
   /**
      Set the midi channel the parameter is watching
