@@ -2,19 +2,23 @@
 #define GT_PARAMETER_H_
 
 #include "scaler.h"
+//#include "GT_Input.h"
+
+// Forward declaration
+class GT_PhysicalInput;
 
 template<typename T> constexpr T GT_shiftR(T x, int8_t bits) {return (bits > 0 ? (x >> (bits)) : bits < 0 ? (x << (-bits)) : x);}
 
 
 class GT_Parameter
 {
- public:
+public:
   /** Constructor
    */
- GT_Parameter(const String name, const bool signedd, const int8_t NBits):
-  name{name},signedd{signedd},NBits{NBits}
-    {
-    }
+  GT_Parameter(const String name, const bool signedd, const int8_t NBits):
+    name{name},signedd{signedd},NBits{NBits}
+  {
+  }
 
 
   /**
@@ -35,8 +39,8 @@ class GT_Parameter
   }
 
   /**
-Increment (or decrement) the parameter
-@param _value: the value to add to the Parameter
+     Increment (or decrement) the parameter
+     @param _value: the value to add to the Parameter
   */
   inline void incrementValue(int32_t _value)
   {
@@ -52,12 +56,12 @@ Increment (or decrement) the parameter
   inline const String getName() const {return name;}
 
   /** 
-Return the number of bits of the parameter
+      Return the number of bits of the parameter
   */
   inline const int8_t getNBits() const {return NBits;}
   
   /**
-Return the bias of the parameter (0 if unsigned)
+     Return the bias of the parameter (0 if unsigned)
   */
   inline const int32_t getBias() const {return bias;}
 
@@ -70,6 +74,12 @@ Return the bias of the parameter (0 if unsigned)
      Return the min value of the parameter
   */
   inline const int32_t getMin() const {return min_value;}
+
+  /**
+     Set the physical input of the parameter
+  */
+  void setInput(GT_PhysicalInput * _input);
+  
 
   /**
      Return the midi channel the parameter is watching
@@ -160,7 +170,7 @@ Return the bias of the parameter (0 if unsigned)
 
   
   
- private:
+private:
   const String name;
   const bool signedd;
   const int8_t NBits;
@@ -169,13 +179,17 @@ Return the bias of the parameter (0 if unsigned)
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
   const int32_t bias = (signedd ? min_value : 0);
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
+  GT_PhysicalInput * physical_input = NULL;
   
 };
 
 
+#include "GT_Input.h"
 
-
-
+void GT_Parameter::setInput(GT_PhysicalInput * _input) {
+  physical_input = _input;
+  _input->setTarget(&*this);
+}
 
 
 

@@ -1,9 +1,12 @@
 #ifndef GT_INPUT_H_
 #define GT_INPUT_H_
 #include <mozzi_analog.h> // for mozziAnalogRead()
-#include "GT_Parameter.h"
+
 #include <RotaryEncoder.h>
 
+
+// Forward declaration
+class GT_Parameter;
 
 
 /**
@@ -36,15 +39,11 @@ public:
   /**
      Get the color of the Input, in 5,6,5 color format
   */
- const inline uint16_t getColor() const {return color;}
+  const inline uint16_t getColor() const {return color;}
+
 
   /**
-     Set the target of the Input
-  */
-  void setTarget(GT_Parameter * _target) {target=_target;}
-
-  /**
-Set the inversion state of the Input
+     Set the inversion state of the Input
   */
   void setInverted(bool _inverted) {inverted=_inverted;}
   
@@ -62,6 +61,12 @@ protected:
   bool inverted;
   GT_Parameter * target=NULL;
 
+    /**
+     Set the target of the Input
+  */
+  void setTarget(GT_Parameter * _target) {target=_target;}
+
+
 
 };
 
@@ -78,27 +83,8 @@ public:
   {
     pinMode(pin, INPUT);
   }
-
-  void update()
-  {
-    if (millis() - last_update_time > response_time)
-      {
-	int32_t tamp_value;
-	if (mozzi_mode) tamp_value = mozziAnalogRead(pin);
-	else tamp_value = analogRead(pin);	
-	if (inverted) tamp_value = max_value - tamp_value;
-	if (tamp_value != value)
-	  {
-	    value = tamp_value;
-	    if (target != NULL) target->setValue(value, NBits);
-	  
-	  }
-	last_update_time = millis();
-      }
-  }
-
   
-  
+  void update();
 
 
 private:
@@ -117,33 +103,62 @@ class GT_RotaryEncoder: public GT_PhysicalInput
 public:
 
   /**
-Constructor
+     Constructor
   */
   
   GT_RotaryEncoder(const String name, const uint16_t color, RotaryEncoder *const encoder, const unsigned long response_time = 20, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), encoder{encoder} {}
 
-  void update()
-  {
-    if (millis() - last_update_time > response_time)
-      {
-	long position = encoder->getPosition();
-	if (inverted) position = -position;
-	if (position != 0)
-	  {
-	    //if (target != NULL) target->setValue(target->getValue()+position, 10);
-	    if (target != NULL) target->incrementValue(position); // TODO: add acceleration in the matter
-	    encoder->setPosition(0);
-	  }
-	last_update_time = millis();
-      }
-  }
+  void update();
+
 
 
 private:
-RotaryEncoder* const encoder;
+  RotaryEncoder* const encoder;
   //  int32_t value;
 
 };
+
+
+
+#include "GT_Parameter.h"
+
+
+void GT_AnalogInput::update()
+{
+  if (millis() - last_update_time > response_time)
+    {
+      int32_t tamp_value;
+      if (mozzi_mode) tamp_value = mozziAnalogRead(pin);
+      else tamp_value = analogRead(pin);	
+      if (inverted) tamp_value = max_value - tamp_value;
+      if (tamp_value != value)
+	{
+	  value = tamp_value;
+	  if (target != NULL) target->setValue(value, NBits);
+	  
+	}
+      last_update_time = millis();
+    }
+}
+
+
+void GT_RotaryEncoder::update()  {
+  if (millis() - last_update_time > response_time)
+    {
+      long position = encoder->getPosition();
+      if (inverted) position = -position;
+      if (position != 0)
+	{
+	  //if (target != NULL) target->setValue(target->getValue()+position, 10);
+	  if (target != NULL) target->incrementValue(position); // TODO: add acceleration in the matter
+	  encoder->setPosition(0);
+	}
+      last_update_time = millis();
+    }
+}
+
+
+
 
 
 #endif
