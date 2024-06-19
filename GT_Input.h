@@ -11,14 +11,14 @@
 
 class GT_PhysicalInput
 {
- public:
+public:
   /**
      Constructor
      @param name: the name of the input
      @param color: the physical color of the input, in the Adafruit (6-bit 5-6-5 Color Format)
      @param inverted: if the parameter should be inverted (reversing its direction)
   */
- GT_PhysicalInput(const String name, const uint16_t color, const unsigned long response_time=20, bool inverted=false): name{name}, color{color}, response_time{response_time}, inverted{inverted} {
+  GT_PhysicalInput(const String name, const uint16_t color, const unsigned long response_time=20, bool inverted=false): name{name}, color{color}, response_time{response_time}, inverted{inverted} {
   }
 
 
@@ -31,36 +31,49 @@ class GT_PhysicalInput
    */
   virtual void update(){}
 
+
+  /**
+     Get the color of the Input, in 5,6,5 color format
+  */
+  uint16_t getColor() {return color;}
+
   /**
      Set the target of the Input
   */
   void setTarget(GT_Parameter * _target) {target=_target;}
 
   /**
-Get the color of the Input, in 5,6,5 color format
+Set the inversion state of the Input
   */
-  uint16_t getColor() {return color;}
+  void setInverted(bool _inverted) {inverted=_inverted;}
+  
 
- protected:
+  friend class GT_Parameter;
+
+
+
+protected:
   int32_t value;
   const String name;
   const uint16_t color;
   const unsigned long response_time;
   unsigned long last_update_time;
   bool inverted;
-  GT_Parameter * target=NULL;    
+  GT_Parameter * target=NULL;
+
+
 };
 
 
 class GT_AnalogInput: public GT_PhysicalInput
 {
- public:
+public:
 
   /** 
-Constructor
-@param mozzi_mode: if true, uses the async mozziAnalogRead( which might show some delays…)
-   */
- GT_AnalogInput(const String name, const uint16_t color, const int8_t pin, const uint8_t NBits, const unsigned long response_time=20, const bool mozzi_mode=true, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), pin{pin}, NBits{NBits}, mozzi_mode{mozzi_mode}
+      Constructor
+      @param mozzi_mode: if true, uses the async mozziAnalogRead( which might show some delays…)
+  */
+  GT_AnalogInput(const String name, const uint16_t color, const int8_t pin, const uint8_t NBits, const unsigned long response_time=20, const bool mozzi_mode=true, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), pin{pin}, NBits{NBits}, mozzi_mode{mozzi_mode}
   {
     pinMode(pin, INPUT);
   }
@@ -71,14 +84,15 @@ Constructor
       {
 	int32_t tamp_value;
 	if (mozzi_mode) tamp_value = mozziAnalogRead(pin);
+	if (inverted) tamp_value = max_value - tamp_value;
 	else tamp_value = analogRead(pin);
-    if (tamp_value != value)
-      {
-	value = tamp_value;
-	if (target != NULL) target->setValue(value, NBits);
+	if (tamp_value != value)
+	  {
+	    value = tamp_value;
+	    if (target != NULL) target->setValue(value, NBits);
 	  
-      }
-    last_update_time = millis();
+	  }
+	last_update_time = millis();
       }
   }
 
@@ -86,10 +100,11 @@ Constructor
   
 
 
- private:
+private:
   const int8_t pin;
   const uint8_t NBits;
   const bool mozzi_mode;
+  const int32_t max_value = 2 << NBits;
 };
 
 
