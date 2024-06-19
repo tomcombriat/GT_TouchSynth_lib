@@ -34,6 +34,17 @@ class GT_Parameter
     value = _value;
   }
 
+  /**
+Increment (or decrement) the parameter
+@param _value: the value to add to the Parameter
+  */
+  inline void incrementValue(int32_t _value)
+  {
+    value += _value;
+    if (value > max_value) value = max_value;
+    else if (value < min_value) value = min_value;
+  }
+
 
   /**
      Return the name of the parameter

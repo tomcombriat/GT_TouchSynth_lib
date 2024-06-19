@@ -130,7 +130,8 @@ Constructor
 	if (inverted) position = -position;
 	if (position != 0)
 	  {
-	    if (target != NULL) target->setValue(target->getValue()+position, 10);
+	    //if (target != NULL) target->setValue(target->getValue()+position, 10);
+	    if (target != NULL) target->incrementValue(position); // TODO: add acceleration in the matter
 	    encoder->setPosition(0);
 	  }
 	last_update_time = millis();
