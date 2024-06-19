@@ -84,8 +84,8 @@ public:
       {
 	int32_t tamp_value;
 	if (mozzi_mode) tamp_value = mozziAnalogRead(pin);
+	else tamp_value = analogRead(pin);	
 	if (inverted) tamp_value = max_value - tamp_value;
-	else tamp_value = analogRead(pin);
 	if (tamp_value != value)
 	  {
 	    value = tamp_value;
@@ -107,6 +107,23 @@ private:
   const int32_t max_value = 2 << NBits;
 };
 
+
+
+
+
+class GT_RotaryEncoder: public GT_PhysicalInput
+{
+
+  /**
+Constructor
+  */
+  
+  //GT_RotaryEncoder
+
+
+
+
+};
 
 
 #endif
