@@ -179,7 +179,7 @@ private:
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
   const int32_t bias = (signedd ? min_value : 0);
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
-  GT_PhysicalInput * physical_input = NULL;
+  GT_PhysicalInput * physical_input = nullptr; // TODO: move to double pointer with complete list of inputs
   
 };
 

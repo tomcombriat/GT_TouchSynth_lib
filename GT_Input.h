@@ -59,7 +59,7 @@ protected:
   const unsigned long response_time;
   unsigned long last_update_time;
   bool inverted;
-  GT_Parameter * target=NULL;
+  GT_Parameter * target=nullptr;
 
     /**
      Set the target of the Input
@@ -134,7 +134,7 @@ void GT_AnalogInput::update()
       if (tamp_value != value)
 	{
 	  value = tamp_value;
-	  if (target != NULL) target->setValue(value, NBits);
+	  if (target != nullptr) target->setValue(value, NBits);
 	  
 	}
       last_update_time = millis();
@@ -150,7 +150,7 @@ void GT_RotaryEncoder::update()  {
       if (position != 0)
 	{
 	  //if (target != NULL) target->setValue(target->getValue()+position, 10);
-	  if (target != NULL) target->incrementValue(position); // TODO: add acceleration in the matter
+	  if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
 	  encoder->setPosition(0);
 	}
       last_update_time = millis();
