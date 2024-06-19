@@ -2,6 +2,7 @@
 #define GT_INPUT_H_
 #include <mozzi_analog.h> // for mozziAnalogRead()
 #include "GT_Parameter.h"
+#include <RotaryEncoder.h>
 
 
 
@@ -25,7 +26,7 @@ public:
   /** Get the name of the Input
       @return the name of the Input.
   */
-  const String getName(){return name;}
+  const inline String getName() const {return name;}
 
   /** Update the Input (not needed for every specification)
    */
@@ -35,7 +36,7 @@ public:
   /**
      Get the color of the Input, in 5,6,5 color format
   */
-  uint16_t getColor() {return color;}
+ const inline uint16_t getColor() const {return color;}
 
   /**
      Set the target of the Input
@@ -113,15 +114,33 @@ private:
 
 class GT_RotaryEncoder: public GT_PhysicalInput
 {
+public:
 
   /**
 Constructor
   */
   
-  //GT_RotaryEncoder
+  GT_RotaryEncoder(const String name, const uint16_t color, RotaryEncoder *const encoder, const unsigned long response_time = 20, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), encoder{encoder} {}
+
+  void update()
+  {
+    if (millis() - last_update_time > response_time)
+      {
+	long position = encoder->getPosition();
+	if (inverted) position = -position;
+	if (position != 0)
+	  {
+	    if (target != NULL) target->setValue(target->getValue()+position, 10);
+	    encoder->setPosition(0);
+	  }
+	last_update_time = millis();
+      }
+  }
 
 
-
+private:
+RotaryEncoder* const encoder;
+  //  int32_t value;
 
 };
 
