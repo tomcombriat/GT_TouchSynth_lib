@@ -101,7 +101,7 @@ protected:
   Adafruit_ILI9341 * screen;
   int16_t pos_X, pos_Y, size;
   uint16_t value, text_size;
-  uint16_t color, background_color;
+  uint16_t color, background_color,default_color = 0xFFFF;
   byte NBit;
   bool visible;
   String text, long_text;
@@ -157,6 +157,7 @@ public:
 	    int32_t in_value = parameter->getValue() + parameter->getBias();
 	    setValue(in_value, parameter->getNBits());
 	    if (parameter->getInput() != nullptr) color=parameter->getInput()->getColor();
+	    else color = default_color;
 	  }
 	if (old_parameter != parameter) setText(parameter->getName());
 
