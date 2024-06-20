@@ -65,6 +65,10 @@ protected:
      Set the target of the Input
   */
   void setTarget(GT_Parameter * _target) {target=_target;}
+  void removeTarget(GT_Parameter * _target)
+  {
+    if (target==_target) target=nullptr;
+  }
 
 
 
@@ -135,7 +139,7 @@ void GT_AnalogInput::update()
 	{
 	  value = tamp_value;
 	  if (target != nullptr) target->setValue(value, NBits);
-	  
+	    	  
 	}
       last_update_time = millis();
     }

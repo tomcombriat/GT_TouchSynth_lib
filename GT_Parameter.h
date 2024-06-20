@@ -15,9 +15,10 @@ class GT_Parameter
 public:
   /** Constructor
    */
-  GT_Parameter(const String name, const bool signedd, const int8_t NBits):
-    name{name},signedd{signedd},NBits{NBits}
+  GT_Parameter(const String name, const bool signedd, const int8_t NBits, GT_PhysicalInput* const* allInputs, const int8_t NInputs):
+    name{name},signedd{signedd},NBits{NBits}, allInputs{allInputs}, NInputs{NInputs}
   {
+    setInput(allInputs[0]);
   }
 
 
@@ -81,6 +82,12 @@ public:
   void setInput(GT_PhysicalInput * _input);
   
 
+  /**
+     Increment the physical input
+  */
+  void incrementInput(int8_t inc);
+  
+  
   /**
      Return the midi channel the parameter is watching
   */
@@ -173,13 +180,15 @@ public:
 private:
   const String name;
   const bool signedd;
-  const int8_t NBits;
+  const int8_t NBits, NInputs;
+  int8_t current_input=0;
   int32_t value;
   const int32_t max_value=(signedd ? 1<<(NBits-1) : 1<<NBits)-1;
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
   const int32_t bias = (signedd ? min_value : 0);
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
   GT_PhysicalInput * physical_input = nullptr; // TODO: move to double pointer with complete list of inputs
+  GT_PhysicalInput* const* allInputs;
   
 };
 
@@ -187,8 +196,18 @@ private:
 #include "GT_Input.h"
 
 void GT_Parameter::setInput(GT_PhysicalInput * _input) {
+  if (physical_input != nullptr) physical_input->removeTarget(&*this);
   physical_input = _input;
   _input->setTarget(&*this);
+}
+
+void GT_Parameter::incrementInput(int8_t inc)
+{
+  int8_t new_current_input = current_input+inc;
+  if (new_current_input > NInputs-1) new_current_input = 0;
+  else if (new_current_input < 0) new_current_input = NInputs-1;
+  setInput(allInputs[new_current_input]);
+  current_input = new_current_input;
 }
 
 
