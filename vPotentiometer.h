@@ -7,6 +7,7 @@
  * - allow text size to be changed
  * - implement necessary getters
  * - fix text refresh -> what is the parameter size? Look into adafruit doc
+- add default color
  */
 
 /*
@@ -104,7 +105,7 @@ protected:
   byte NBit;
   bool visible;
   String text, long_text;
-  unsigned long last_update;  // TODO: set update_delay to const, rename response_time
+  unsigned long last_update;  
   const unsigned long response_time;
   GT_Parameter * parameter=NULL;
 };
@@ -155,6 +156,7 @@ public:
 	  {
 	    int32_t in_value = parameter->getValue() + parameter->getBias();
 	    setValue(in_value, parameter->getNBits());
+	    if (parameter->getInput() != nullptr) color=parameter->getInput()->getColor();
 	  }
 	if (old_parameter != parameter) setText(parameter->getName());
 
@@ -164,6 +166,13 @@ public:
 	    eraseContour();
 	    eraseValue();
 	    eraseText();
+	    drawContour();
+	    drawValue();
+	    drawText();
+	    refresh_text = false;
+	  }
+	if (old_color != color)
+	  {
 	    drawContour();
 	    drawValue();
 	    drawText();

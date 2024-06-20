@@ -80,7 +80,12 @@ public:
      Set the physical input of the parameter
   */
   void setInput(GT_PhysicalInput * _input);
-  
+
+
+  /**
+Get the physical input of the parameter
+  */
+  GT_PhysicalInput * getInput() {return physical_input;}
 
   /**
      Increment the physical input
