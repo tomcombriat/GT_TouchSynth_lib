@@ -90,10 +90,16 @@ Attach a parameter to the visual potentiometer, and detach any previous ones
   */
   void attachParameter(GT_Parameter * _parameter){parameter = _parameter;}
 
+    /**
+Returns the attached parameter to this visual potentiometer
+@param _parameter a pointer to a GT_Parameter
+  */
+ const GT_Parameter * getAttachedParameter() const {return parameter;}
+
   /**
 Return the last time isInHitBox returned true
   */
-  unsigned long getLastHit()
+  unsigned long getLastHit() const
   {
     return last_hit_time;
   }
