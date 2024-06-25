@@ -75,7 +75,7 @@ public:
       @return boolean telling if the point is touching the object
   */
   bool isInHitBox(int16_t X, int16_t Y){
-    if (X > pos_X - (size>>1) && X <pos_X +(size>>1) && Y>pos_Y - (size>>1) && Y < pos_Y + (size>>1))
+    if (X > pos_X - (size) && X <pos_X +(size) && Y>pos_Y - (size) && Y < pos_Y + (size))
       {
 	last_hit_time = millis();
 	return true;
