@@ -75,16 +75,28 @@ public:
       @return boolean telling if the point is touching the object
   */
   bool isInHitBox(int16_t X, int16_t Y){
-    if (X > pos_X - (size>>1) && X <pos_X +(size>>1) && Y>pos_Y - (size>>1) && Y < pos_Y + (size>>1)) return true;
+    if (X > pos_X - (size>>1) && X <pos_X +(size>>1) && Y>pos_Y - (size>>1) && Y < pos_Y + (size>>1))
+      {
+	last_hit_time = millis();
+	return true;
+      }
     else return false;
   }
 
-  /** Set the time between each actual refresh of the object
-      @param delay: the new refresh time
-  */
-  // void setRefreshTime(unsigned long delay) {update_delay = delay;}
 
+  /**
+Attach a parameter to the visual potentiometer, and detach any previous ones
+@param _parameter a pointer to a GT_Parameter
+  */
   void attachParameter(GT_Parameter * _parameter){parameter = _parameter;}
+
+  /**
+Return the last time isInHitBox returned true
+  */
+  unsigned long getLastHit()
+  {
+    return last_hit_time;
+  }
 
   
   /** Set the size of the text of the potentiometer
@@ -105,7 +117,7 @@ protected:
   byte NBit;
   bool visible;
   String text, long_text;
-  unsigned long last_update;  
+  unsigned long last_update, last_hit_time=0;
   const unsigned long response_time;
   GT_Parameter * parameter=NULL;
 };
