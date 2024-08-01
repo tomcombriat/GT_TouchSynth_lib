@@ -52,6 +52,10 @@ public:
     else if (value < min_value) value = min_value;
   }
 
+  /** Disconnect the input to the param (initialize the idxs to 0)
+   */
+  inline void disconnectInput();
+
 
   /**
      Return the name of the parameter
@@ -95,10 +99,10 @@ public:
   */
   inline GT_PhysicalInput * getInput() {return physical_input;}
 
-    /**
+  /**
      Get the physical input of the parameter
   */
-inline GT_PhysicalInput * getProspectiveInput() {return prospective_input;}
+  inline GT_PhysicalInput * getProspectiveInput() {return prospective_input;}
 
   /**
      Increment the physical input
@@ -113,8 +117,8 @@ inline GT_PhysicalInput * getProspectiveInput() {return prospective_input;}
   */
   void incrementProspectiveInput(int8_t inc=1);
 
-    /**
-Update if the prospective input is to be selected
+  /**
+     Update if the prospective input is to be selected
   */
   inline void update();
   
@@ -228,6 +232,14 @@ private:
 
 #include "GT_Input.h"  // weird organization for circular inclusion
 
+void GT_Parameter::disconnectInput()
+{
+  physical_input = nullptr;
+  current_input_idx = 0;
+  prospective_input = nullptr;
+  prospective_input_idx = 0;
+  
+}
 
 void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
   if (physical_input != nullptr) physical_input->removeTarget(&*this);
@@ -253,7 +265,7 @@ void GT_Parameter::setInput(int N)
   if (N>NInputs) N=NInputs;
   setInput(allInputs[N],true);
   current_input_idx = N;
-  }
+}
 
 void GT_Parameter::incrementProspectiveInput(int8_t inc)
 {

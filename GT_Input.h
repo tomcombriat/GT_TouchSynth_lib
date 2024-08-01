@@ -64,7 +64,13 @@ protected:
     /**
      Set the target of the Input
   */
-  void setTarget(GT_Parameter * _target) {target=_target;}
+  void setTarget(GT_Parameter * _target) {
+    
+    if (target!= nullptr) target->disconnectInput(); 
+    target=_target;
+  }
+
+  
   void removeTarget(GT_Parameter * _target)
   {
     if (target==_target) target=nullptr;
