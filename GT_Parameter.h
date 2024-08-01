@@ -78,11 +78,11 @@ public:
 
   /**
      Set the physical input of the parameter, directly
-@todo TO BE MADE PRIVATE?
+     @todo TO BE MADE PRIVATE?
   */
   void setInput(GT_PhysicalInput * _input,bool idx_known=false);
 
-    /**
+  /**
      Set the physical input of the parameter as the Nth of the complete list of parameters
   */
   void setInput(int8_t N);
@@ -95,16 +95,21 @@ public:
 
   /**
      Increment the physical input
-@todo TO BE REMOVED?
+     @todo TO BE REMOVED?
   */
   void incrementInput(int8_t inc);
 
   /**
-Increment the prospective input. 
-The prospective input will be selected to replace the current input
-after a timout
+     Increment the prospective input. 
+     The prospective input will be selected to replace the current input
+     after a timout
   */
   void incrementProspectiveInput(int8_t inc=1);
+
+    /**
+Update if the prospective input is to be selected
+  */
+  inline void update();
   
   /**
      Return the midi channel the parameter is watching
@@ -209,6 +214,7 @@ private:
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
   GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
+  unsigned long last_prospective_change, prospective_timeout = 10000;
   
 };
 
@@ -248,6 +254,7 @@ void GT_Parameter::incrementProspectiveInput(int8_t inc)
   else if (new_prospective_input < 0) new_prospective_input = NInputs-1;
   prospective_input = allInputs[new_prospective_input];
   prospective_input_idx = new_prospective_input;
+  last_prospective_change = millis();
 }
 
 
@@ -258,6 +265,11 @@ void GT_Parameter::incrementInput(int8_t inc)
   else if (new_current_input_idx < 0) new_current_input_idx = NInputs-1;
   setInput(allInputs[new_current_input_idx]);
   current_input_idx = new_current_input_idx;
+}
+
+void GT_Parameter::update()
+{
+  if (millis() - last_prospective_change > prospective_timeout) setInput(prospective_input_idx);
 }
 
 
