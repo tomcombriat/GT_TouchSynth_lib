@@ -18,7 +18,9 @@ public:
   GT_Parameter(const String name, const bool signedd, const int8_t NBits, GT_PhysicalInput* const* allInputs, const int8_t NInputs):
     name{name},signedd{signedd},NBits{NBits}, allInputs{allInputs}, NInputs{NInputs}
   {
-    setInput(allInputs[0]);
+    //setInput(allInputs[0]);
+    setInput(0);
+    incrementProspectiveInput(0);
   }
 
 
@@ -85,7 +87,7 @@ public:
   /**
      Set the physical input of the parameter as the Nth of the complete list of parameters
   */
-  void setInput(int8_t N);
+  void setInput(int N);
 
 
   /**
@@ -239,7 +241,8 @@ void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
     }
 }
 
-void GT_Parameter::setInput(int8_t N)
+
+void GT_Parameter::setInput(int N)
 {
   if (N<0) N=0;
   if (N>NInputs) N=NInputs;
