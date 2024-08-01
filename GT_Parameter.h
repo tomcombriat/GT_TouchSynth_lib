@@ -77,9 +77,15 @@ public:
   inline const int32_t getMin() const {return min_value;}
 
   /**
-     Set the physical input of the parameter
+     Set the physical input of the parameter, directly
+@todo TO BE MADE PRIVATE?
   */
-  void setInput(GT_PhysicalInput * _input);
+  void setInput(GT_PhysicalInput * _input,bool idx_known=false);
+
+    /**
+     Set the physical input of the parameter as the Nth of the complete list of parameters
+  */
+  void setInput(int8_t N);
 
 
   /**
@@ -89,9 +95,16 @@ public:
 
   /**
      Increment the physical input
+@todo TO BE REMOVED?
   */
   void incrementInput(int8_t inc);
-  
+
+  /**
+Increment the prospective input. 
+The prospective input will be selected to replace the current input
+after a timout
+  */
+  void incrementProspectiveInput(int8_t inc=1);
   
   /**
      Return the midi channel the parameter is watching
@@ -188,33 +201,63 @@ private:
   const String name;
   const bool signedd;
   const int8_t NBits, NInputs;
-  int8_t current_input=0;
+  int8_t current_input_idx=0,prospective_input_idx=0;
   int32_t value;
   const int32_t max_value=(signedd ? 1<<(NBits-1) : 1<<NBits)-1;
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
   const int32_t bias = (signedd ? min_value : 0);
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
-  GT_PhysicalInput * physical_input = nullptr; // TODO: move to double pointer with complete list of inputs
+  GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
   
 };
 
 
-#include "GT_Input.h"
+#include "GT_Input.h"  // weird organization for circular inclusion
 
-void GT_Parameter::setInput(GT_PhysicalInput * _input) {
+
+void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
   if (physical_input != nullptr) physical_input->removeTarget(&*this);
   physical_input = _input;
   _input->setTarget(&*this);
+  if (!idx_known)
+    {
+      for (int8_t i=0;i<NInputs;i++)
+	{
+	  if (allInputs[i]==_input)
+	    {
+	      current_input_idx = i;
+	      break;
+	    }
+	}
+    }
 }
+
+void GT_Parameter::setInput(int8_t N)
+{
+  if (N<0) N=0;
+  if (N>NInputs) N=NInputs;
+  setInput(allInputs[N],true);
+  current_input_idx = N;
+}
+
+void GT_Parameter::incrementProspectiveInput(int8_t inc)
+{
+  int8_t new_prospective_input = prospective_input_idx+inc;
+  if (new_prospective_input > NInputs-1) new_prospective_input = 0;
+  else if (new_prospective_input < 0) new_prospective_input = NInputs-1;
+  prospective_input = allInputs[new_prospective_input];
+  prospective_input_idx = new_prospective_input;
+}
+
 
 void GT_Parameter::incrementInput(int8_t inc)
 {
-  int8_t new_current_input = current_input+inc;
-  if (new_current_input > NInputs-1) new_current_input = 0;
-  else if (new_current_input < 0) new_current_input = NInputs-1;
-  setInput(allInputs[new_current_input]);
-  current_input = new_current_input;
+  int8_t new_current_input_idx = current_input_idx+inc;
+  if (new_current_input_idx > NInputs-1) new_current_input_idx = 0;
+  else if (new_current_input_idx < 0) new_current_input_idx = NInputs-1;
+  setInput(allInputs[new_current_input_idx]);
+  current_input_idx = new_current_input_idx;
 }
 
 
