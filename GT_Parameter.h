@@ -54,7 +54,7 @@ public:
 
   /** Disconnect the input to the param (initialize the idxs to 0)
    */
-  inline void disconnectInput();
+  void disconnectInput();
 
 
   /**
@@ -225,7 +225,7 @@ private:
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
   GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
-  unsigned long last_prospective_change, prospective_timeout = 10000;
+  unsigned long last_prospective_change=0, prospective_timeout = 10000;
   
 };
 
@@ -234,17 +234,16 @@ private:
 
 void GT_Parameter::disconnectInput()
 {
-  physical_input = nullptr;
+    physical_input = nullptr;
   current_input_idx = 0;
   prospective_input = nullptr;
   prospective_input_idx = 0;
-  
 }
 
 void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
   if (physical_input != nullptr) physical_input->removeTarget(&*this);
   physical_input = _input;
-  _input->setTarget(&*this);
+  if (_input!=nullptr) _input->setTarget(&*this);
   if (!idx_known)
     {
       for (int8_t i=0;i<NInputs;i++)
@@ -289,7 +288,7 @@ void GT_Parameter::incrementInput(int8_t inc)
 
 void GT_Parameter::update()
 {
-  if (millis() - last_prospective_change > prospective_timeout) setInput(prospective_input_idx);
+   if (millis() - last_prospective_change > prospective_timeout) setInput(prospective_input_idx);
 }
 
 

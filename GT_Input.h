@@ -64,17 +64,13 @@ protected:
     /**
      Set the target of the Input
   */
-  void setTarget(GT_Parameter * _target) {
-    
-    if (target!= nullptr) target->disconnectInput(); 
-    target=_target;
-  }
+  void setTarget(GT_Parameter * _target);
 
   
   void removeTarget(GT_Parameter * _target)
-  {
+   {
     if (target==_target) target=nullptr;
-  }
+    }
 
 
 
@@ -132,6 +128,14 @@ private:
 
 #include "GT_Parameter.h"
 
+
+void GT_PhysicalInput::setTarget(GT_Parameter * _target){
+    
+  if (target!= nullptr) target->disconnectInput(); 
+    target=_target;
+    }
+  
+				
 
 void GT_AnalogInput::update()
 {
