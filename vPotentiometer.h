@@ -123,7 +123,7 @@ protected:
   byte NBit;
   bool visible;
   String text, long_text;
-  unsigned long last_update, last_hit_time=0;
+  unsigned long last_update, last_hit_time=0,  prospective_blink_time = 300, last_blink_time=0;
   const unsigned long response_time;
   GT_Parameter * parameter=NULL;
 };
@@ -174,8 +174,39 @@ public:
 	  {
 	    int32_t in_value = parameter->getValue() + parameter->getBias();
 	    setValue(in_value, parameter->getNBits());
-	    if (parameter->getInput() != nullptr) color=parameter->getInput()->getColor();
-	    else color = default_color;
+
+
+
+	    
+		if (parameter->getInput() != parameter->getProspectiveInput()) // blinking (or else) is needed
+		  {       
+		    if (millis() - last_blink_time > prospective_blink_time) // change color
+		      {
+			
+			last_blink_time = millis();
+			uint16_t input_color, prospective_color;
+			if (parameter->getInput() != nullptr) input_color = parameter->getInput()->getColor();
+			else input_color = default_color;
+
+			if (parameter->getProspectiveInput() != nullptr) prospective_color = parameter->getProspectiveInput()->getColor();
+			else prospective_color = default_color;
+
+			if (color == input_color) color = prospective_color;
+			else color = input_color;
+			
+	
+			/*	if (color == parameter->getInput()->getColor()) color == parameter->getProspectiveInput()->getColor();
+				else color=parameter->getInput()->getColor();*/
+		      }
+		  }		
+		else
+		  {
+		    if (parameter->getInput() != nullptr) color=parameter->getInput()->getColor();
+		    else color = default_color;
+		  }
+
+	      
+		//else color = default_color;
 	  }
 	if (old_parameter != parameter) setText(parameter->getName());
 
@@ -235,7 +266,8 @@ private:
   uint8_t old_value;
   uint8_t max_string_length;
   bool refresh_text;
-  GT_Parameter * old_parameter=NULL;
+  GT_Parameter * old_parameter=nullptr;
+  
   
 
   static const int16_t INNER_DISC=220, INDICATOR_LENGTH=210, INDICATOR_WIDTH=20;

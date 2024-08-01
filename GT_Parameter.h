@@ -93,7 +93,12 @@ public:
   /**
      Get the physical input of the parameter
   */
-  GT_PhysicalInput * getInput() {return physical_input;}
+  inline GT_PhysicalInput * getInput() {return physical_input;}
+
+    /**
+     Get the physical input of the parameter
+  */
+inline GT_PhysicalInput * getProspectiveInput() {return prospective_input;}
 
   /**
      Increment the physical input
@@ -248,7 +253,7 @@ void GT_Parameter::setInput(int N)
   if (N>NInputs) N=NInputs;
   setInput(allInputs[N],true);
   current_input_idx = N;
-}
+  }
 
 void GT_Parameter::incrementProspectiveInput(int8_t inc)
 {
