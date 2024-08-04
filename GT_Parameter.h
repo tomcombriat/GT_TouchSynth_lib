@@ -65,7 +65,7 @@ public:
   /** 
       Return the number of bits of the parameter
   */
-  inline const int8_t getNBits() const {return NBits;}
+  inline constexpr int8_t getNBits() const {return NBits;}
   
   /**
      Return the bias of the parameter (0 if unsigned)
@@ -91,7 +91,7 @@ public:
   /**
      Set the physical input of the parameter as the Nth of the complete list of parameters
   */
-  void setInput(int N);
+  void setInput(int N, bool discard_prospect=false);
 
 
   /**
@@ -116,6 +116,11 @@ public:
      after a timout
   */
   void incrementProspectiveInput(int8_t inc=1);
+
+inline unsigned long getLastProspectiveChangeTime() const
+  {
+    return last_prospective_change;
+  }
 
   /**
      Update if the prospective input is to be selected
@@ -225,7 +230,7 @@ private:
   byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
   GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
-  unsigned long last_prospective_change=0, prospective_timeout = 10000;
+  unsigned long last_prospective_change=0, prospective_timeout = 2000;
   
 };
 
@@ -234,10 +239,13 @@ private:
 
 void GT_Parameter::disconnectInput()
 {
-    physical_input = nullptr;
+  if (prospective_input == physical_input)
+    {
+      prospective_input = nullptr;
+      prospective_input_idx = 0;
+    }
+  physical_input = nullptr;
   current_input_idx = 0;
-  prospective_input = nullptr;
-  prospective_input_idx = 0;
 }
 
 void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
@@ -258,12 +266,17 @@ void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
 }
 
 
-void GT_Parameter::setInput(int N)
+void GT_Parameter::setInput(int N, bool discard_prospect)
 {
   if (N<0) N=0;
   if (N>NInputs) N=NInputs;
   setInput(allInputs[N],true);
   current_input_idx = N;
+  if (discard_prospect)
+    {
+      prospective_input = allInputs[N];
+      prospective_input_idx = N;
+    }
 }
 
 void GT_Parameter::incrementProspectiveInput(int8_t inc)
