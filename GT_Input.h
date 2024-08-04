@@ -64,10 +64,10 @@ protected:
     /**
      Set the target of the Input
   */
-  void setTarget(GT_Parameter * _target);
+  inline void setTarget(GT_Parameter * _target);
 
   
-  void removeTarget(GT_Parameter * _target)
+  inline void removeTarget(GT_Parameter * _target)
    {
     if (target==_target) target=nullptr;
     }
