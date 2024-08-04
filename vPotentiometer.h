@@ -174,16 +174,12 @@ public:
 	  {
 	    int32_t in_value = parameter->getValue() + parameter->getBias();
 	    setValue(in_value, parameter->getNBits());
-
-
-
 	    
 		if (parameter->getInput() != parameter->getProspectiveInput()) // blinking (or else) is needed
-		  {       
+		  {
 		    if (millis() - last_blink_time > prospective_blink_time) // change color
-		      {
+		      {			
 			
-			last_blink_time = millis();
 			uint16_t input_color, prospective_color;
 			if (parameter->getInput() != nullptr) input_color = parameter->getInput()->getColor();
 			else input_color = default_color;
@@ -191,8 +187,12 @@ public:
 			if (parameter->getProspectiveInput() != nullptr) prospective_color = parameter->getProspectiveInput()->getColor();
 			else prospective_color = default_color;
 
+			if (parameter->getLastProspectiveChangeTime() > last_blink_time) color = prospective_color;
+			else{
 			if (color == input_color) color = prospective_color;
 			else color = input_color;
+			}
+			last_blink_time = millis();
 			
 	
 			/*	if (color == parameter->getInput()->getColor()) color == parameter->getProspectiveInput()->getColor();
