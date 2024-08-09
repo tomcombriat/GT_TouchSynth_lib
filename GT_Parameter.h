@@ -84,14 +84,13 @@ public:
 
   /**
      Set the physical input of the parameter, directly
-     @todo TO BE MADE PRIVATE?
   */
   void setInput(GT_PhysicalInput * _input,bool idx_known=false);
 
   /**
      Set the physical input of the parameter as the Nth of the complete list of parameters
   */
-  void setInput(int N, bool discard_prospect=false);
+  void setInput(int N);
 
 
   /**
@@ -117,7 +116,7 @@ public:
   */
   void incrementProspectiveInput(int8_t inc=1);
 
-inline unsigned long getLastProspectiveChangeTime() const
+  inline unsigned long getLastProspectiveChangeTime() const
   {
     return last_prospective_change;
   }
@@ -239,17 +238,15 @@ private:
 
 void GT_Parameter::disconnectInput()
 {
-  if (prospective_input == physical_input)
-    {
-      prospective_input = nullptr;
-      prospective_input_idx = 0;
-    }
+
+  prospective_input = nullptr;
+  prospective_input_idx = 0;
   physical_input = nullptr;
   current_input_idx = 0;
 }
 
 void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
-  if (physical_input != nullptr) physical_input->removeTarget(&*this);
+  if (physical_input != nullptr) physical_input->removeTarget(&*this); 
   physical_input = _input;
   if (_input!=nullptr) _input->setTarget(&*this);
   if (!idx_known)
@@ -263,20 +260,20 @@ void GT_Parameter::setInput(GT_PhysicalInput * _input, bool idx_known) {
 	    }
 	}
     }
+  prospective_input = physical_input;
+  prospective_input_idx = current_input_idx;
 }
 
 
-void GT_Parameter::setInput(int N, bool discard_prospect)
+void GT_Parameter::setInput(int N)
 {
   if (N<0) N=0;
   if (N>NInputs) N=NInputs;
   setInput(allInputs[N],true);
   current_input_idx = N;
-  if (discard_prospect)
-    {
-      prospective_input = allInputs[N];
-      prospective_input_idx = N;
-    }
+  prospective_input = allInputs[N];
+  prospective_input_idx = N;
+
 }
 
 void GT_Parameter::incrementProspectiveInput(int8_t inc)
@@ -301,7 +298,7 @@ void GT_Parameter::incrementInput(int8_t inc)
 
 void GT_Parameter::update()
 {
-   if (millis() - last_prospective_change > prospective_timeout) setInput(prospective_input_idx);
+  if (millis() - last_prospective_change > prospective_timeout) setInput(prospective_input_idx);
 }
 
 
