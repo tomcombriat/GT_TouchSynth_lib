@@ -67,7 +67,7 @@ class GT_Button
   */
   bool isInHitBox(int16_t X, int16_t Y)
   {
-    if (X > pos_X && X < pos_X + size_X && Y >pos_Y && Y > pos_Y + size_Y) return true;
+    if (X > pos_X && X < pos_X + size_X && Y > pos_Y && Y < pos_Y + size_Y) return true;
     return false;
   }
 
@@ -135,13 +135,13 @@ class GT_Button
   void eraseBox() {screen->fillRect(old_pos_X, old_pos_Y, old_size_X, old_size_Y, background_color); }
 
   void drawText() {
-    screen->setCursor(pos_X + (size_X>>1) - ((text.length()*(TEXT_BASE_WIDTH>>1))), pos_Y + (size_Y>>2) + (TEXT_BASE_HEIGHT>>1));
+    screen->setCursor(pos_X + (size_X>>1) - ((text.length()*(TEXT_BASE_WIDTH>>1))), pos_Y + (size_Y>>1) - (TEXT_BASE_HEIGHT>>1));
     screen->setTextColor(text_color);
     screen->print(text);
   }
 
     void eraseText() {
-    screen->setCursor(old_pos_X + (old_size_X>>1) - ((old_text.length()*(TEXT_BASE_WIDTH>>1))), old_pos_Y + (old_size_Y>>2) + (TEXT_BASE_HEIGHT>>1));
+      screen->setCursor(old_pos_X + (old_size_X>>1) - ((old_text.length()*(TEXT_BASE_WIDTH>>1))), old_pos_Y + (old_size_Y>>2) - (TEXT_BASE_HEIGHT>>1));
     screen->setTextColor(color);
     screen->print(old_text);
   }
