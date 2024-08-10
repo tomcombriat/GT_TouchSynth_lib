@@ -238,7 +238,7 @@ private:
 
 void GT_Parameter::disconnectInput()
 {
-
+  if (physical_input) physical_input->removeTarget(&*this);
   prospective_input = nullptr;
   prospective_input_idx = 0;
   physical_input = nullptr;
