@@ -67,7 +67,7 @@ class GT_Button
   */
   bool isInHitBox(int16_t X, int16_t Y)
   {
-    if (X > pos_X && X < pos_X - size_X && Y >pos_Y && Y > pos_Y - size_Y) return true;
+    if (X > pos_X && X < pos_X + size_X && Y >pos_Y && Y > pos_Y + size_Y) return true;
     return false;
   }
 
@@ -107,6 +107,11 @@ class GT_Button
 
 
   void setAction(void (*_action)()) {action = _action;}
+
+  void trigAction()
+  {
+    if (action) action();
+  }
   
 
 
