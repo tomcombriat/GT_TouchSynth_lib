@@ -41,6 +41,16 @@ public:
     value = _value;
   }
 
+    /**
+     Set the value of the parameter, in RAW
+     @param _value: the value to input
+     @param NBits_input the number of bits of the input
+  */
+  inline void setValueRAW(int32_t _value) // assumes unsigned
+  {	
+    value = _value;
+  }
+
   /**
      Increment (or decrement) the parameter
      @param _value: the value to add to the Parameter
