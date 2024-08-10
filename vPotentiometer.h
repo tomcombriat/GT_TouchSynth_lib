@@ -4,10 +4,6 @@
 /****
  * Visual representation of a potentiometer.
  * TODO:
- * - allow text size to be changed
- * - implement necessary getters
- * - fix text refresh -> what is the parameter size? Look into adafruit doc
- - add default color
 */
 
 /*
