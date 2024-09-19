@@ -154,26 +154,30 @@ public:
   /**
      Set the midi channel the parameter is watching
   */
-  inline void setMidiChannel(byte _midi_channel) {midi_channel=_midi_channel;}
+  inline void setMidiChannel(byte _midi_channel) {
+    midi_channel=_midi_channel;
+    if (midi_channel >15) midi_channel=15;
+    if (midi_channel< -1) midi_channel=-1;
+  }
 
   /**
      Set the midi control1 (MSB) the parameter is watching
   */
-  inline void setMidiControl1(byte _control) {
+  inline void setMidiControl1(int8_t _control) {
     midi_control1=_control;
-    if (_control > 127)
+    if (_control < -1)
       {
-	midi_control1 = 255;
-	midi_control2 = 255; // disabling both    
+	midi_control1 = -1;
+	midi_control2 = -1; // disabling both    
       }
   }
 
   /**
      Set the midi control2 (LSB) the parameter is watching
   */
-  inline void setMidiControl2(byte _control) {
+  inline void setMidiControl2(int8_t _control) {
     midi_control2=_control;
-    if (_control > 127) midi_control2 = 255;
+    if (_control <-1 127) midi_control2 = -1;
   }
 
   /**
@@ -187,7 +191,7 @@ public:
 	  {
 	    if (_control == midi_control1) // MSB
 	      {
-		if (midi_control2 == 255) setValue(_value, 7); // no LSB
+		if (midi_control2 == -1) setValue(_value, 7); // no LSB
 	    
 		else // LSB present
 		  {
@@ -236,7 +240,7 @@ private:
   const int32_t max_value=(signedd ? 1<<(NBits-1) : 1<<NBits)-1;
   const int32_t min_value=(signedd ? -1<<(NBits-1):0);
   const int32_t bias = (signedd ? min_value : 0);
-  byte midi_channel, midi_control1=255, midi_control2=255; // 255 is non active
+  int8_t midi_channel=-1, midi_control1=-1, midi_control2=-1; // -1 is non active
   GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
   unsigned long last_prospective_change=0, prospective_timeout = 2000;
