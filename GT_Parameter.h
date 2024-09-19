@@ -177,7 +177,7 @@ public:
   */
   inline void setMidiControl2(int8_t _control) {
     midi_control2=_control;
-    if (_control <-1 127) midi_control2 = -1;
+    if (_control <-1) midi_control2 = -1;
   }
 
   /**
