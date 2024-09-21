@@ -93,7 +93,7 @@ public:
   inline const int32_t getMin() const {return min_value;}
 
   /**
-     Set the physical input of the parameter, directly
+     Set the physical input of the parameter, directly and immediately
   */
   void setInput(GT_PhysicalInput * _input,bool idx_known=false);
 
