@@ -14,6 +14,7 @@ void update()
   {
     has_been_pressed = false;
     has_been_released = false;
+    has_been_released_after_long_press=false;
     
     if (millis() - last_update_time > response_time)
       {
@@ -21,8 +22,17 @@ void update()
 
 	bool currently_pressed = ts->touched();
 
-	if (currently_pressed && !is_pressed) has_been_pressed=true;
-	if (!currently_pressed && is_pressed) has_been_released=true;
+	if (currently_pressed && !is_pressed)
+	  {
+	    has_been_pressed=true;
+	    last_press_time = millis();
+	  }
+	if (!currently_pressed && is_pressed)
+	  {
+	    //has_been_released=true;
+	    if (millis()-last_press_time > long_press_timout) has_been_released_after_long_press=true;
+	    else has_been_released=true;
+	  }
 
 	is_pressed = currently_pressed;
 	if (is_pressed)
@@ -48,6 +58,8 @@ void update()
 
   bool hasBeenReleased() {return has_been_released;}
 
+    bool hasBeenReleasedAfterLongPress() {return has_been_released_after_long_press;}
+
   bool hasBeenPressed() {return has_been_pressed;}
 
 void data(int16_t * _x, int16_t * _y)
@@ -67,13 +79,13 @@ void data(int16_t * _x, int16_t * _y)
 private:
   XPT2046_Touchscreen * const ts;
   const unsigned long response_time;
-  unsigned long last_update_time;
+  unsigned long last_update_time, last_press_time, long_press_timout=1000;
   int16_t x,y;
   uint8_t z;
   uint16_t MINX,MINY,MAXX,MAXY; // Calibration information
   const uint16_t size_x, size_y;
 
-  bool is_pressed=false, has_been_pressed=false,has_been_released=false;
+  bool is_pressed=false, has_been_pressed=false,has_been_released=false, has_been_released_after_long_press=false;
   
 
 };
