@@ -175,7 +175,7 @@ void GT_RotaryEncoder::update()  {
       if (position != 0)
 	{
 	  //if (target != NULL) target->setValue(target->getValue()+position, 10);
-	  if (target_menu) Serial.print(1); // place holder
+	  if (target_menu) target_menu->incrementValue(position); // place holder
 	 else if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
 	  encoder->setPosition(0);
 	}

@@ -35,7 +35,7 @@ class GT_Menu
     is_active=true;
   }
 
-    /**
+  /**
      Exits the menu
   */
   virtual void exit(){
@@ -66,9 +66,11 @@ class GT_Menu
 
   virtual void drawAll(bool BG_color=false) {}
 
+  virtual void incrementValue(int16_t inc) {}
+
  protected:
-  Adafruit_ILI9341 * screen;
-  GT_RotaryEncoder * encoder;
+  Adafruit_ILI9341 * const screen;
+  GT_RotaryEncoder * const encoder;
   const unsigned long response_time;
   unsigned long last_update_time;
   bool is_active=false;
@@ -76,6 +78,7 @@ class GT_Menu
   const uint8_t N_item;
   uint8_t current_item = 0, current_depth=0, text_size = 1;
   uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
+  int16_t increment=0;
 };
 
 
@@ -89,7 +92,7 @@ class GT_MenuParameter: public GT_Menu
   /**
      Constructor
   */
- GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,7,response_time) {}
+ GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,9,response_time) {}
 
 
   void start(GT_Parameter * _parameter)
@@ -98,11 +101,51 @@ class GT_MenuParameter: public GT_Menu
     parameter=_parameter;
     screen->fillScreen(background_color);
     for (uint8_t i=0;i<N_item;i++)
-      {writeLeftColumn(i);
+      {
+	writeLeftColumn(i);
 	writeRightColumn(i);
       }
-    
+    incrementValue(0); 
+  }
 
+  void update()
+  {
+    if (is_active)
+      {
+	if (millis() - last_update_time > response_time)
+	  {
+	    last_update_time = millis();
+
+	    // Refresh the displayed value that can be changed by another process
+	    if (old_value != parameter->getValue())
+	      {
+		writeRightColumn(1,true);
+		writeRightColumn(1);
+		old_value = parameter->getValue();
+	      }
+    
+	    if (current_depth==0)      {
+	      uint8_t new_item= current_item+increment;
+	      if (new_item >=N_item) new_item = N_item-1;
+	      if (int16_t(current_item) + increment <0) new_item=0;
+
+	      switch (new_item) {
+
+	      case 0:
+		new_item = 1;
+		break;
+	      }
+	      if (new_item != current_item)
+		{
+		  writeCursor(current_item,0,true); // erase old cursor
+		  writeCursor(new_item,0);
+		  current_item = new_item;
+		}
+
+	    }
+	    increment = 0;
+	  }
+      }
   }
  
 
@@ -133,10 +176,16 @@ class GT_MenuParameter: public GT_Menu
       screen->print("  MIDI MSB CC:");
       break;
     case 5:
-      screen->print("  MIDI LSB CC:");
+      screen->print("  MIDI MSB Learn");
       break;
     case 6:
-      screen->print("> EXIT:");
+      screen->print("  MIDI LSB CC:");
+      break;
+    case 7:
+      screen->print("  MIDI LSB Learn");
+      break;
+    case 8:
+      screen->print("  EXIT");
       break;  
     }
   }
@@ -153,7 +202,8 @@ class GT_MenuParameter: public GT_Menu
       break;
 
     case 1:
-      screen->print(parameter->getValue());
+      if (BG_color) screen->print(old_value);
+      else screen->print(parameter->getValue());
       break;
     case 2:
       if (parameter->getInput()!=nullptr)
@@ -169,13 +219,32 @@ class GT_MenuParameter: public GT_Menu
     case 4:
       screen->print(parameter->getMidiControl1());
       break;
-    case 5:
+    case 6:
       screen->print(parameter->getMidiControl2());
       break;    
     }
   }
 
+  void writeCursor(uint8_t row, uint8_t column,bool BG_color=false)
+  {
+    screen->setCursor(left_margin+column*item_width,row*item_height+top_margin);
+    if (!BG_color) screen->setTextColor(color);
+    else screen->setTextColor(background_color);
+    screen->setTextSize(text_size);
+    screen->print(">");
+  }
+
+  void incrementValue(int16_t inc)
+  {
+    increment += inc;
+  }
+  
+
+
   GT_Parameter * parameter=nullptr;
+  int32_t old_value;
+
+  
   
 };
 #endif
