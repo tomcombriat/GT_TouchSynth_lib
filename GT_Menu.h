@@ -30,7 +30,18 @@ class GT_Menu
   /**
      Start the menu
   */
-  virtual void start(){is_active=true;}
+  virtual void start(){
+    encoder->setTargetMenu(&*this);
+    is_active=true;
+  }
+
+    /**
+     Exits the menu
+  */
+  virtual void exit(){
+    encoder->setTargetMenu(nullptr);
+    is_active=false;
+  }
 
   /**
      Set the background color
@@ -43,9 +54,9 @@ class GT_Menu
   void setColor(uint16_t _color) {color = _color;}
 
   /**
-Set the height and the width of a single item
-@param _height the new height of an element
-@param _width the new width
+     Set the height and the width of a single item
+     @param _height the new height of an element
+     @param _width the new width
   */
   void setItemHeightWidth(uint16_t _height,uint16_t _width)
   {
@@ -78,7 +89,7 @@ class GT_MenuParameter: public GT_Menu
   /**
      Constructor
   */
- GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,5,response_time) {}
+ GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,7,response_time) {}
 
 
   void start(GT_Parameter * _parameter)
@@ -108,22 +119,29 @@ class GT_MenuParameter: public GT_Menu
       //screen->print(parameter->getName());
       break;
     case 1:
+      screen->print("  Value:");
+      //screen->print(parameter->getName());
+      break;
+    case 2:
       screen->print("  Input:");
       break;
       break;
-    case 2:
+    case 3:
       screen->print("  MIDI ch:");
       break;
-    case 3:
+    case 4:
       screen->print("  MIDI MSB CC:");
       break;
-    case 4:
+    case 5:
       screen->print("  MIDI LSB CC:");
-      break;    
+      break;
+    case 6:
+      screen->print("> EXIT:");
+      break;  
     }
   }
 
-    void writeRightColumn(uint8_t N, bool BG_color=false)
+  void writeRightColumn(uint8_t N, bool BG_color=false)
   {
     screen->setCursor(left_margin+item_width,N*item_height+top_margin);
     if (!BG_color) screen->setTextColor(color);
@@ -131,11 +149,13 @@ class GT_MenuParameter: public GT_Menu
     screen->setTextSize(text_size);
     switch (N){
     case 0:
-      //screen->print("  Name:");
       screen->print(parameter->getName());
       break;
+
     case 1:
-      //screen->print("  Input:");
+      screen->print(parameter->getValue());
+      break;
+    case 2:
       if (parameter->getInput()!=nullptr)
 	{uint16_t prev_color = color;
 	  screen->setTextColor(parameter->getInput()->getColor());
@@ -143,16 +163,13 @@ class GT_MenuParameter: public GT_Menu
 	  screen->setTextColor(prev_color);
 	}
       break;
-    case 2:
-      //screen->print("  MIDI MSB ch:");
+    case 3:
       screen->print(parameter->getMidiChannel());
       break;
-    case 3:
-      //screen->print("  MIDI MSB CC:");
+    case 4:
       screen->print(parameter->getMidiControl1());
       break;
-    case 4:
-      //screen->print("  MIDI LSB CC:");
+    case 5:
       screen->print(parameter->getMidiControl2());
       break;    
     }
