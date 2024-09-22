@@ -5,8 +5,10 @@
 #include <RotaryEncoder.h>
 
 
+
 // Forward declaration
 class GT_Parameter;
+class GT_Menu;
 
 
 /**
@@ -49,6 +51,7 @@ public:
   
 
   friend class GT_Parameter;
+  friend class GT_Menu;
 
 
 
@@ -60,17 +63,20 @@ protected:
   unsigned long last_update_time;
   bool inverted;
   GT_Parameter * target=nullptr;
+  GT_Menu * target_menu = nullptr;
 
     /**
      Set the target of the Input
   */
   inline void setTarget(GT_Parameter * _target);
-
   
   inline void removeTarget(GT_Parameter * _target)
    {
     if (target==_target) target=nullptr;
     }
+  
+
+  inline void setTargetMenu(GT_Menu * _target);
 
 
 
@@ -127,12 +133,17 @@ private:
 
 
 #include "GT_Parameter.h"
+#include "GT_Menu.h"
 
 
 void GT_PhysicalInput::setTarget(GT_Parameter * _target){
     
   if (target!= nullptr) target->disconnectInput(); 
     target=_target;
+    }
+
+void GT_PhysicalInput::setTargetMenu(GT_Menu * _target){  
+    target_menu=_target;
     }
   
 				
@@ -164,7 +175,8 @@ void GT_RotaryEncoder::update()  {
       if (position != 0)
 	{
 	  //if (target != NULL) target->setValue(target->getValue()+position, 10);
-	  if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
+	  if (target_menu) Serial.print(1); // place holder
+	 else if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
 	  encoder->setPosition(0);
 	}
       last_update_time = millis();
