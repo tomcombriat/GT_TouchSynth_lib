@@ -139,17 +139,17 @@ public:
   /**
      Return the midi channel the parameter is watching
   */
-  inline byte getMidiChannel() {return midi_channel;}
+  inline int8_t getMidiChannel() {return midi_channel;}
 
   /**
      Return the midi control1 (MSB) the parameter is watching
   */
-  inline byte getMidiControl1() const {return midi_control1;}
+  inline int8_t getMidiControl1() const {return midi_control1;}
 
   /**
      Return the midi control2 (LSB) the parameter is watching
   */
-  inline byte getMidiControl2() const {return midi_control2;}
+  inline int8_t getMidiControl2() const {return midi_control2;}
 
   /**
      Set the midi channel the parameter is watching
