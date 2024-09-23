@@ -16,3 +16,10 @@ The librairy used to program the G_TES_touch-synth
 		    |	  engine   |
 		    +--------------+
 
+
+
+
+
+## Todo:
+ - GT_PhysicalButton: a small class handling a physical momentary button
+ - finish GT_MenuParameter                                 
