@@ -1,9 +1,12 @@
 #ifndef GT_MENU_H_
 #define GT_MENU_H_
 
-#include "GT_Input.h" // for the encoder
+//#include "GT_Input.h" // for the encoder
 #include <Adafruit_GFX.h> // for the screen
 #include "GT_Parameter.h"
+
+// Forward declaration
+class GT_RotaryEncoder;
 
 /** GT_Menu is a common mother class for all menus
  */
@@ -30,10 +33,10 @@ class GT_Menu
   /**
      Start the menu
   */
-  virtual void start(){
-    encoder->setTargetMenu(&*this);
-    is_active=true;
-  }
+  virtual void start();/*{
+			 encoder->setTargetMenu(&*this);
+			 is_active=true;
+			 }*/
 
   /**
      Exits the menu
@@ -123,27 +126,31 @@ class GT_MenuParameter: public GT_Menu
 		writeRightColumn(1);
 		old_value = parameter->getValue();
 	      }
-    
-	    if (current_depth==0)      {
-	      uint8_t new_item= current_item+increment;
-	      if (new_item >=N_item) new_item = N_item-1;
-	      if (int16_t(current_item) + increment <0) new_item=0;
+	    
+	    // Rotary touched, take action
+	    if (increment!=0)
+	      {
+		if (current_depth==0)      {
+		  uint8_t new_item= current_item+increment;
+		  if (new_item >=N_item) new_item = N_item-1;
+		  if (int16_t(current_item) + increment <0) new_item=0;
 
-	      switch (new_item) {
+		  switch (new_item) {
 
-	      case 0:
-		new_item = 1;
-		break;
-	      }
-	      if (new_item != current_item)
-		{
-		  writeCursor(current_item,0,true); // erase old cursor
-		  writeCursor(new_item,0);
-		  current_item = new_item;
+		  case 0:
+		    new_item = 1;
+		    break;
+		  }
+		  if (new_item != current_item)
+		    {
+		      writeCursor(current_item,0,true); // erase old cursor
+		      writeCursor(new_item,0);
+		      current_item = new_item;
+		    }
+
 		}
-
-	    }
-	    increment = 0;
+		increment = 0;
+	      }
 	  }
       }
   }
@@ -244,7 +251,18 @@ class GT_MenuParameter: public GT_Menu
   GT_Parameter * parameter=nullptr;
   int32_t old_value;
 
-  
+
+ 
   
 };
+
+
+
+#include "GT_Input.h"
+
+void GT_Menu::start(){
+  encoder->setTargetMenu(&*this);
+  is_active=true;
+}
+
 #endif
