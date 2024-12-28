@@ -4,6 +4,14 @@
 /****
  * Visual representation of a potentiometer.
  * TODO:
+ - make indication of select/proposed input in the center:
+   - pre-selected: blink in the center
+   - selected: solid continuous color
+ - from pre-selected: select/unselect with one click
+ - exit menu (unselect) with one long click (for the rotary…)
+ - go to menu on double click
+   - put an adress to the menu in there (updated via this update)
+ - maybe make size constant to have a potential canvas of just the size to minimize flicker?
 */
 
 /*
@@ -159,7 +167,7 @@ public:
 
   /** Update the display of the visual potentiometer if needed
       @note Timing: around 5-10ms
-      @todo Change to get the *actual* value of the parameter, not the raw one.
+      @todo Change to get the *actual* value of the parameter, not the raw one. (on display?)
   */
   void update()
   {
@@ -175,10 +183,10 @@ public:
 	      {
 		uint16_t input_color, prospective_color;
 		if (parameter->getInput() != nullptr) input_color = parameter->getInput()->getColor();
-		else input_color = default_color;
+		else input_color = default_color; // default to white
 
 		if (parameter->getProspectiveInput() != nullptr) prospective_color = parameter->getProspectiveInput()->getColor();
-		else prospective_color = default_color;
+		else prospective_color = default_color;  // default to white
 
 
 		if (parameter->getLastProspectiveChangeTime() > last_blink_time)
