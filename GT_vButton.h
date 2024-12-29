@@ -14,10 +14,10 @@
     Base class for all buttons
 */
 
-class GT_Button
+class GT_vButton
 {
 public:
-  GT_Button(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
+  GT_vButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
   {screen = _screen;}
 
     /** Set the position of the button
@@ -60,10 +60,10 @@ protected:
 
 
 
-class GT_BasicButton: public GT_Button
+class GT_BasicButton: public GT_vButton
 {
 public:
-  GT_BasicButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): GT_Button(_screen, response_time){} /*response_time{response_time} 
+  GT_BasicButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): GT_vButton(_screen, response_time){} /*response_time{response_time} 
 														   {screen = _screen;}*/
   
 

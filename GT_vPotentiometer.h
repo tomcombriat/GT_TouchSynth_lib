@@ -32,10 +32,10 @@
 /** A virtual class for different kinds of potentiometers
  */
 template<typename T>
-class vPotentiometer  
+class GT_vPotentiometer  
 {
 public:
-  vPotentiometer(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
+  GT_vPotentiometer(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
   {screen = _screen; NBit = sizeof(T)<<3;}
 
   /** Set the size of the visual potentiometer
@@ -139,13 +139,13 @@ protected:
 
 /** A classic visual representation of a potentiometer
  */
-class ClassicPot: public vPotentiometer<uint8_t>
+class GT_vClassicPot: public GT_vPotentiometer<uint8_t>
 {
 public:
   /** Constructor
       @param _screen is the pointer toward a screen
   */
-  ClassicPot(Adafruit_ILI9341* _screen, unsigned long response_time=50): vPotentiometer(_screen){}
+  GT_vClassicPot(Adafruit_ILI9341* _screen, unsigned long response_time=50): GT_vPotentiometer(_screen){}
   
   /** Set the size of the visual potentiometer
       @param _size the new size
