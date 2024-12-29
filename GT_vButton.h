@@ -1,8 +1,8 @@
 #ifndef _GT_BUTTON_
 #define _GT_BUTTON_
 
-#include"vPotentiometer.h" // to recover the text sizes
-
+#include"GT_vPotentiometer.h" // to recover the text sizes
+#include "GT_vVisualElement.h"
 
 /**
    A button, present on screen, that can be pressed to trigger an action
@@ -14,11 +14,12 @@
     Base class for all buttons
 */
 
-class GT_vButton
+class GT_vButton: public GT_vVisualElement
 {
 public:
-  GT_vButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): response_time{response_time} 
-  {screen = _screen;}
+  GT_vButton(Adafruit_ILI9341* _screen, unsigned long response_time=50):/* response_time{response_time} 
+									   {screen = _screen;}*/
+    GT_vVisualElement(_screen, 2, response_time){}
 
     /** Set the position of the button
       @param X the X position
@@ -50,21 +51,18 @@ public:
 
 
 protected:
-  Adafruit_ILI9341 * screen;
   int16_t pos_X, pos_Y;
   uint16_t color, old_color, background_color;
   unsigned long last_update;
-  const unsigned long response_time;
   void (*action)()=nullptr;
 };
 
 
 
-class GT_BasicButton: public GT_vButton
+class GT_vBasicButton: public GT_vButton
 {
 public:
-  GT_BasicButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): GT_vButton(_screen, response_time){} /*response_time{response_time} 
-														   {screen = _screen;}*/
+  GT_vBasicButton(Adafruit_ILI9341* _screen, unsigned long response_time=50): GT_vButton(_screen, response_time){}
   
 
 
