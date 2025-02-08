@@ -4,10 +4,9 @@
 /****
  * Visual representation of a potentiometer.
  * TODO:
- - make indication of select/proposed input in the center
  - select with one click
- - unselect with one long click
- - go to menu on double click
+ - unselect with another click
+ - go to menu on long click
  - maybe make size constant to have a potential canvas of just the size to minimize flicker?
 */
 
@@ -121,7 +120,22 @@ public:
     selected = _selected;
   }
 
+  
+  /** 
+Return the preselction state of the vPot
+  */
+  bool isPreselected() const
+  {
+    return preselected;
+      }
 
+  /**
+Return the selection state of the element
+  */
+    bool isSelected() const
+  {
+    return selected;
+      }
   
   /** Set the size of the text of the potentiometer
       @param _text_size the new text size
