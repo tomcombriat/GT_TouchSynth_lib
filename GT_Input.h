@@ -3,7 +3,7 @@
 #include <mozzi_analog.h> // for mozziAnalogRead()
 
 #include <RotaryEncoder.h>
-
+#include <Button.h>  // from TES_eSax-lib
 
 
 // Forward declaration
@@ -118,7 +118,7 @@ public:
      Constructor
   */
   
-  GT_RotaryEncoder(const String name, const uint16_t color, RotaryEncoder *const encoder, const unsigned long response_time = 20, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), encoder{encoder} {}
+  GT_RotaryEncoder(const String name, const uint16_t color, RotaryEncoder *const encoder, Button * const button=nullptr, unsigned long response_time = 20, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), encoder{encoder}, button{button} {}
 
   void update();
 
@@ -126,6 +126,7 @@ public:
 
 private:
   RotaryEncoder* const encoder;
+  Button * const button;
   //  int32_t value;
 
 };
