@@ -100,6 +100,23 @@ public:
     return last_hit_time;
   }
 
+  /** 
+      Preselect the visual pot
+  */
+  void preselect(bool _preselected=true)
+  {
+    preselected = _preselected;
+  }
+
+  /** 
+      Select the visual pot
+  */
+  void select(bool _selected=true)
+  {
+    selected = _selected;
+  }
+
+
   
   /** Set the size of the text of the potentiometer
       @param _text_size the new text size
@@ -122,6 +139,7 @@ protected:
   unsigned long last_update, last_hit_time=0,  prospective_blink_time = 200, last_blink_time=0;
   const unsigned long response_time;
   GT_Parameter * parameter=NULL;
+  bool preselected = false, selected = false;
 };
 
 
@@ -206,6 +224,19 @@ public:
 		if (parameter->getInput() != nullptr) color=parameter->getInput()->getColor();
 		else color = default_color;
 	      }
+
+	    ///// Preselect
+	    if (preselected)
+	      {
+		if(millis() - last_blink_time > prospective_blink_time)
+		  {		  
+		    if (in_color == background_color) in_color = default_color;
+		    else in_color = background_color;
+		    last_blink_time = millis();
+		  }
+	      }
+	    if (selected) in_color = default_color;
+	      
 	  
 	      
 	    //else color = default_color;
@@ -223,7 +254,7 @@ public:
 		drawText();
 		refresh_text = false;
 	      }
-	    if (old_color != color)
+	    if (old_color != color || old_in_color != in_color)
 	      {
 		drawContour();
 		drawValue();
@@ -247,6 +278,7 @@ public:
 	    old_value = value;
 	    old_size = size;
 	    old_color = color;
+	    old_in_color = in_color;
 	    old_parameter = parameter;
 
 	    last_update = millis();  
@@ -264,7 +296,7 @@ public:
   private:
     /// Members of this implementation
     int16_t old_pos_X, old_pos_Y, old_size;
-    uint16_t old_color;  
+  uint16_t old_color, in_color=background_color, old_in_color;
     uint8_t old_value;
     uint8_t max_string_length;
     bool refresh_text;
@@ -343,7 +375,7 @@ public:
 
     void drawContour(){
       screen->fillCircle(pos_X, pos_Y, size, color);
-      screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
+      screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, in_color);
     }
 
     void eraseText(){
@@ -362,7 +394,7 @@ public:
 
     void eraseValue()
     {
-      drawFatLineAngle(old_pos_X,old_pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);
+      drawFatLineAngle(old_pos_X,old_pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,in_color);
     }
 
     void drawValue()
