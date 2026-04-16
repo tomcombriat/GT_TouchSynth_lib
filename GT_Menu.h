@@ -5,6 +5,13 @@
 #include <Adafruit_GFX.h> // for the screen
 #include "GT_Parameter.h"
 
+
+/*
+TODO:
+ - make the base class less specific in order to have the base screen selection as a menu also
+ - simplify: menu should not necessarily have access to the screen, or the encoder. Make a main menu that dispatch encoder events: turn, pressed, long press, and starts and stops the menues.
+*/
+
 // Forward declaration
 class GT_RotaryEncoder;
 
