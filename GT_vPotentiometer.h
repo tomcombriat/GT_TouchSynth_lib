@@ -276,6 +276,7 @@ public:
 	    eraseValue();
 	    eraseText();
 	    drawContour();
+	    drawInContour();
 	    drawValue();
 	    drawText();
 	    refresh_text = false;
@@ -283,13 +284,14 @@ public:
 	if (old_color != color)
 	  {
 	    drawContour();
+	    drawInContour();
 	    drawValue();
 	    drawText();
 	    refresh_text = false;
 	  }
 	if (old_in_color != in_color)
 	  {
-	    drawContour();
+	    drawInContour();
 	    drawValue();
 	  }
 	if (old_value != value)
@@ -319,6 +321,7 @@ public:
   void drawAll() // to be used after a black screen
   {
     drawContour();
+    drawInContour();
     drawValue();
     drawText();
   }
@@ -406,6 +409,9 @@ private:
 
   void drawContour(){
     screen->fillCircle(pos_X, pos_Y, size, color);
+  }
+
+  void drawInContour(){
   screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, in_color);
   }
 
@@ -425,7 +431,7 @@ private:
 
   void eraseValue()
   {
-    drawFatLineAngle(old_pos_X,old_pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,background_color);
+    drawFatLineAngle(old_pos_X,old_pos_Y,old_value,(size*INDICATOR_LENGTH)>>8,in_color);
   }
 
   void drawValue()
