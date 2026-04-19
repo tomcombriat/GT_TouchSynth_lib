@@ -171,9 +171,9 @@ private:
 
   void eraseBox() {screen->fillRect(old_pos_X, old_pos_Y, old_size_X, old_size_Y, background_color); }
 
-  void eraseOuterBox() {screen->drawRect(old_pos_X-1, old_pos_Y-1, old_size_X+2, old_size_Y+2,background_color);}
+  void eraseOuterBox() {for (int i=1;i<3;i++) screen->drawRect(old_pos_X-i, old_pos_Y-i, old_size_X+(i<<1), old_size_Y+(i<<1),background_color);}
   
-  void drawOuterBox() {screen->drawRect(pos_X-1, pos_Y-1, size_X+2, size_Y+2,preselected_color);}
+  void drawOuterBox() {for (int i=1;i<3;i++) screen->drawRect(pos_X-i, pos_Y-i, size_X+(i<<1), size_Y+(i<<1),preselected_color);}
 
 
   
