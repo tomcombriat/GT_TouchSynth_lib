@@ -320,7 +320,7 @@ public:
 private:
   /// Members of this implementation
   int16_t old_pos_X, old_pos_Y, old_size;
-  uint16_t old_color;  
+  uint16_t old_color, in_color=background_color, old_in_color;
   uint8_t old_value;
   uint8_t max_string_length;
   bool refresh_text;
@@ -399,7 +399,7 @@ private:
 
   void drawContour(){
     screen->fillCircle(pos_X, pos_Y, size, color);
-    screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, background_color);
+  screen->fillCircle(pos_X, pos_Y, (size*INNER_DISC) >> 8, in_color);
   }
 
   void eraseText(){
