@@ -65,15 +65,15 @@ protected:
   GT_Parameter * target=nullptr;
   GT_Menu * target_menu = nullptr;
 
-    /**
+  /**
      Set the target of the Input
   */
   inline void setTarget(GT_Parameter * _target);
   
   inline void removeTarget(GT_Parameter * _target)
-   {
+  {
     if (target==_target) target=nullptr;
-    }
+  }
   
 
   inline void setTargetMenu(GT_Menu * _target);
@@ -140,12 +140,12 @@ private:
 void GT_PhysicalInput::setTarget(GT_Parameter * _target){
     
   if (target!= nullptr) target->disconnectInput(); 
-    target=_target;
-    }
+  target=_target;
+}
 
 void GT_PhysicalInput::setTargetMenu(GT_Menu * _target){  
-    target_menu=_target;
-    }
+  target_menu=_target;
+}
   
 				
 
@@ -171,13 +171,15 @@ void GT_AnalogInput::update()
 void GT_RotaryEncoder::update()  {
   if (millis() - last_update_time > response_time)
     {
+      
+      if (button) button->update();
       long position = encoder->getPosition();
       if (inverted) position = -position;
       if (position != 0)
 	{
 	  //if (target != NULL) target->setValue(target->getValue()+position, 10);
 	  if (target_menu) target_menu->incrementValue(position); // place holder
-	 else if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
+	  else if (target != nullptr) target->incrementValue(position); // TODO: add acceleration in the matter
 	  encoder->setPosition(0);
 	}
       last_update_time = millis();
