@@ -117,8 +117,11 @@ public:
 	if (old_pos_X != pos_X || old_pos_Y != pos_Y || old_size_X != size_X || old_size_Y != size_Y)
 	  {
 	    eraseBox();
+	    if (isPreselected()) eraseOuterBox();
+	      
 	    drawBox();
 	    drawText();
+	    if (isPreselected()) drawOuterBox();
 	    old_pos_X = pos_X;
 	    old_pos_Y = pos_Y;
 	    old_size_X = size_X;
@@ -140,6 +143,12 @@ public:
 	    eraseText();
 	    drawText();
 	  }
+	else if (old_preselected != isPreselected())
+	  {
+	    if (isPreselected()) drawOuterBox();
+	    else eraseOuterBox();
+	    old_preselected = !old_preselected;
+	  }
 	last_update = millis();
       }
   }
@@ -150,10 +159,11 @@ private:
   
   int16_t size_X, size_Y;
   int16_t old_pos_X, old_pos_Y, old_size_X, old_size_Y;
-  uint16_t text_color;
-  uint16_t  old_text_color;
+  uint16_t text_color, old_text_color;
+  uint16_t preselected_color=65535;
   uint8_t text_size=1, old_text_size=0;
   String text, old_text;
+  bool old_preselected=false;
 
 
 
@@ -161,6 +171,12 @@ private:
 
   void eraseBox() {screen->fillRect(old_pos_X, old_pos_Y, old_size_X, old_size_Y, background_color); }
 
+  void eraseOuterBox() {screen->drawRect(old_pos_X-1, old_pos_Y-1, old_size_X+2, old_size_Y+2,background_color);}
+  
+  void drawOuterBox() {screen->drawRect(pos_X-1, pos_Y-1, size_X+2, size_Y+2,preselected_color);}
+
+
+  
   void drawText() {
     screen->setCursor(pos_X + (size_X>>1) - ((text.length()*(TEXT_BASE_WIDTH>>1))), pos_Y + (size_Y>>1) - (TEXT_BASE_HEIGHT>>1));
     screen->setTextColor(text_color);
