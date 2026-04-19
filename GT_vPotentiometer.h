@@ -250,13 +250,14 @@ public:
 	      }
 
 	    ///// Preselect
-	    if (preselected)
+	    if (isPreselected())
 	      {
 		if(millis() - last_blink_time > prospective_blink_time)
-		  {		  
+		  {
 		    if (in_color == background_color) in_color = default_color;
 		    else in_color = background_color;
 		    last_blink_time = millis();
+		    Serial.println(in_color);
 		  }
 	      }
 	    if (selected) in_color = default_color;
@@ -286,6 +287,11 @@ public:
 	    drawText();
 	    refresh_text = false;
 	  }
+	if (old_in_color != in_color)
+	  {
+	    drawContour();
+	    drawValue();
+	  }
 	if (old_value != value)
 	  {
 	    eraseValue();
@@ -304,6 +310,7 @@ public:
 	old_size = size;
 	old_color = color;
 	old_parameter = parameter;
+	old_in_color = in_color;
 
 	last_update = millis();  
       }
