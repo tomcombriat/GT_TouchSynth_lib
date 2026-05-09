@@ -20,7 +20,7 @@
 #define TEXT_BASE_WIDTH 6 // 5+1 spacing
 #define TEXT_BASE_HEIGHT 7
 
-
+#include <Arduino.h>
 #include <Adafruit_GFX.h>
 #include "GT_Parameter.h"
 #include "GT_vVisualElement.h"

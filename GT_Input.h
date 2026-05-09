@@ -1,5 +1,7 @@
 #ifndef GT_INPUT_H_
 #define GT_INPUT_H_
+
+#include <MozziHeadersOnly.h>
 #include <mozzi_analog.h> // for mozziAnalogRead()
 
 #include <RotaryEncoder.h>
@@ -76,7 +78,9 @@ protected:
   }
   
 
-  inline void setTargetMenu(GT_Menu * _target);
+  inline void setTargetMenu(GT_Menu * _target){  
+  target_menu=_target;
+}
 
 
 
@@ -143,9 +147,10 @@ void GT_PhysicalInput::setTarget(GT_Parameter * _target){
   target=_target;
 }
 
+/*
 void GT_PhysicalInput::setTargetMenu(GT_Menu * _target){  
   target_menu=_target;
-}
+  }*/
   
 				
 

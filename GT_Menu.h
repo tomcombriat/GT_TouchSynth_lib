@@ -3,6 +3,7 @@
 
 //#include "GT_Input.h" // for the encoder
 #include <Adafruit_GFX.h> // for the screen
+#include <Adafruit_ILI9341.h>
 #include "GT_Parameter.h"
 
 
