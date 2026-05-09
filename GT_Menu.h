@@ -3,7 +3,9 @@
 
 //#include "GT_Input.h" // for the encoder
 #include <Adafruit_GFX.h> // for the screen
+#include <Adafruit_ILI9341.h>
 #include "GT_Parameter.h"
+#include "GT_Input.h"
 
 
 /*
@@ -40,7 +42,7 @@ class GT_Menu
   /**
      Start the menu
   */
-  virtual void start();/*{
+   void start();/*{
 			 encoder->setTargetMenu(&*this);
 			 is_active=true;
 			 }*/
@@ -48,10 +50,7 @@ class GT_Menu
   /**
      Exits the menu
   */
-  virtual void exit(){
-    encoder->setTargetMenu(nullptr);
-    is_active=false;
-  }
+  virtual void exit();
 
   /**
      Set the background color
@@ -265,11 +264,6 @@ class GT_MenuParameter: public GT_Menu
 
 
 
-#include "GT_Input.h"
 
-void GT_Menu::start(){
-  encoder->setTargetMenu(&*this);
-  is_active=true;
-}
 
 #endif
