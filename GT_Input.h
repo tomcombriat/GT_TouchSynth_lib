@@ -36,7 +36,7 @@ public:
 
   /** Update the Input (not needed for every specification)
    */
-  virtual void update(){}
+  virtual void update(){};
 
 
   /**
@@ -69,7 +69,7 @@ protected:
   /**
      Set the target of the Input
   */
-  inline void setTarget(GT_Parameter * _target);
+   void setTarget(GT_Parameter * _target);
   
   inline void removeTarget(GT_Parameter * _target)
   {
