@@ -5,6 +5,7 @@
 //#include "Parameter.h"
 #include "GT_Parameter.h"
 #include "GT_vVisualElement.h"
+#include "GT_vPotentiometer.h"
 
 
 

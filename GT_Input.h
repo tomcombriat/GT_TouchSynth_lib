@@ -8,8 +8,8 @@
 
 
 // Forward declaration
-//class GT_Parameter;
-//class GT_Menu;
+class GT_Parameter;
+class GT_Menu;
 
 
 /**
@@ -122,6 +122,9 @@ public:
   GT_RotaryEncoder(const String name, const uint16_t color, RotaryEncoder *const encoder, Button * const button=nullptr, unsigned long response_time = 20, bool inverted=false): GT_PhysicalInput(name, color, response_time, inverted), encoder{encoder}, button{button} {}
 
   void update();
+
+    friend class GT_Parameter;
+  friend class GT_Menu;
   
 protected:
     void setTargetMenu(GT_Menu * _target);
