@@ -77,7 +77,7 @@ protected:
   }
   
 
-  virtual void setTargetMenu(GT_Menu * _target);
+  void setTargetMenu(GT_Menu * _target);
 
 
 
@@ -127,7 +127,7 @@ public:
   friend class GT_Menu;
   
 protected:
-    void setTargetMenu(GT_Menu * _target);
+  //void setTargetMenu(GT_Menu * _target);
 
 
 private:
