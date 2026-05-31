@@ -1,7 +1,8 @@
 #ifndef GT_INPUT_H_
 #define GT_INPUT_H_
 //#include <mozzi_analog.h> // for mozziAnalogRead()
-#include<MozziHeadersOnly.h>
+//#include <MozziHeadersOnly.h>
+//#include <mozzi_analog.h>
 #include "GT_Menu.h"
 #include <RotaryEncoder.h>
 #include <Button.h>  // from TES_eSax-lib
@@ -10,6 +11,7 @@
 // Forward declaration
 class GT_Parameter;
 class GT_Menu;
+uint16_t mozziAnalogRead_wrapper(uint8_t pin);
 
 
 /**
@@ -105,6 +107,12 @@ private:
   const uint8_t NBits;
   const bool mozzi_mode;
   const int32_t max_value = 2 << NBits;
+
+  int32_t getAnalogValue();/*
+  {
+    if (mozzi_mode) return mozziAnalogRead<12>(pin);
+      else return analogRead(pin);
+      };*/
 };
 
 

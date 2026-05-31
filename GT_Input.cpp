@@ -1,18 +1,19 @@
-//#include "GT_Input.h"
+#include "GT_Input.h"
 
 #include <Arduino.h>
 #include "GT_Parameter.h"
 //#include "GT_Menu.h"
-
+//#include <MozziHeadersOnly.h>
+// #include <mozzi_analog.h>
 
 
 void GT_AnalogInput::update()
 {
   if (millis() - last_update_time > response_time)
     {
-      int32_t tamp_value;
-      if (mozzi_mode) tamp_value = mozziAnalogRead(pin);
-      else tamp_value = analogRead(pin);	
+      int32_t tamp_value;// = getAnalogValue();
+      if (mozzi_mode) tamp_value = mozziAnalogRead_wrapper(pin);
+       else tamp_value = analogRead(pin);	
       if (inverted) tamp_value = max_value - tamp_value;
       if (tamp_value != value)
 	{
