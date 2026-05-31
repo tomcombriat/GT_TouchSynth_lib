@@ -1,5 +1,7 @@
 #ifndef SCALER_H_
 #define SCALER_H_
+#include<Arduino.h>
+
 
 template<typename T1, typename T2>
   inline T2 scale(T1 inputValue, byte inputNBit = sizeof(T1)<<3, byte outputNbit=sizeof(T2)<<3)
