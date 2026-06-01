@@ -126,6 +126,12 @@ public:
   */
   void incrementProspectiveInput(int8_t inc=1);
 
+  /**
+     Actually set the input to the prospective, which are then equal
+  */
+    
+  void commitProspectiveInput();
+
   inline unsigned long getLastProspectiveChangeTime() const
   {
     return last_prospective_change;
@@ -243,7 +249,7 @@ private:
   int8_t midi_channel=-1, midi_control1=-1, midi_control2=-1; // -1 is non active
   GT_PhysicalInput * physical_input = nullptr, *prospective_input = nullptr;
   GT_PhysicalInput* const* allInputs;
-  unsigned long last_prospective_change=0, prospective_timeout = 2000;
+  unsigned long last_prospective_change=0, prospective_timeout = 200000000;
   
 };
 
