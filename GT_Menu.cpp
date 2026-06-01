@@ -76,6 +76,16 @@ void GT_MenuParameter::update()
 		  }
 
 	      }
+	      if (current_depth==1)
+	      {
+		switch (current_item)
+		  {
+		  case 1:
+		    parameter->incrementValue(increment);
+		    break;
+
+		  }
+	      }
 	      increment = 0;
 	    }
 	}
