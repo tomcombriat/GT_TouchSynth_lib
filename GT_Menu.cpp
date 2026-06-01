@@ -11,22 +11,25 @@ void GT_Menu::start(){
 
 void GT_Menu::exit(){
   encoder->setTargetMenu(nullptr);
+  current_item=0;
+  current_depth=0;
   is_active=false;
 }
 
 
 
 void GT_MenuParameter::start(GT_Parameter * _parameter){
-    GT_Menu::start();
-    parameter=_parameter;
-    screen->fillScreen(background_color);
-    for (uint8_t i=0;i<N_item;i++)
-      {
-	writeLeftColumn(i);
-	writeRightColumn(i);
-      }
-    incrementValue(0); 
-  }
+  GT_Menu::start();
+  parameter=_parameter;
+  screen->fillScreen(background_color);
+  for (uint8_t i=0;i<N_item;i++)
+    {
+      writeLeftColumn(i);
+      writeRightColumn(i);
+    }
+  writeCursor(current_item,current_depth);
+  // incrementValue(0); 
+}
 
 void GT_MenuParameter::update()
 {
@@ -43,6 +46,8 @@ void GT_MenuParameter::update()
 	      writeRightColumn(1);
 	      old_value = parameter->getValue();
 	    }
+
+	  if (current_depth==1 && current_item==8) exit();
 
 
 
@@ -77,15 +82,16 @@ void GT_MenuParameter::update()
 
 	      }
 	      if (current_depth==1)
-	      {
-		switch (current_item)
-		  {
-		  case 1:
-		    parameter->incrementValue(increment);
-		    break;
+		{
+		  switch (current_item)
+		    {
+		    case 1:
+		      parameter->incrementValue(increment);
+		      break;
 
-		  }
-	      }
+
+		    }
+		}
 	      increment = 0;
 	    }
 	}
