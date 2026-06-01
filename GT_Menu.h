@@ -79,6 +79,8 @@ class GT_Menu
 
   virtual void incrementValue(int16_t inc) {}
 
+  virtual void buttonRelease() {}
+
  protected:
   Adafruit_ILI9341 * const screen;
   GT_RotaryEncoder * const encoder;
@@ -87,7 +89,7 @@ class GT_Menu
   bool is_active=false;
   uint16_t background_color=0, color = 65535;
   const uint8_t N_item;
-  uint8_t current_item = 0, current_depth=0, text_size = 1;
+  uint8_t current_item = 0, current_depth=0, old_depth=0, text_size = 1;
   uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
   int16_t increment=0;
 };
@@ -106,18 +108,7 @@ class GT_MenuParameter: public GT_Menu
  GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,9,response_time) {}
 
 
-  void start(GT_Parameter * _parameter)
-  {
-    GT_Menu::start();
-    parameter=_parameter;
-    screen->fillScreen(background_color);
-    for (uint8_t i=0;i<N_item;i++)
-      {
-	writeLeftColumn(i);
-	writeRightColumn(i);
-      }
-    incrementValue(0); 
-  }
+  void start(GT_Parameter * _parameter);
 
   void update();
  
@@ -140,7 +131,6 @@ class GT_MenuParameter: public GT_Menu
       break;
     case 2:
       screen->print("  Input:");
-      break;
       break;
     case 3:
       screen->print("  MIDI ch:");
@@ -179,6 +169,12 @@ class GT_MenuParameter: public GT_Menu
   void incrementValue(int16_t inc)
   {
     increment += inc;
+  }
+
+  void buttonRelease()
+  {
+    if (current_depth==0) current_depth=1;
+    else current_depth=0;
   }
   
 
