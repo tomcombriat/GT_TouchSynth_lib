@@ -57,12 +57,15 @@ void GT_MenuParameter::update()
 	      writeCursor(current_item,old_depth,true);
 	      writeCursor(current_item,current_depth);
 	      old_depth = current_depth;
+	      if (current_item ==2 && current_depth==0) parameter->commitProspectiveInput(); //we just exited a potential change of input
 	    }
 	    
 	  // Rotary touched, take action
 	  if (increment!=0)
 	    {
-	      if (current_depth==0)      {
+	      ////// DEPTH 0
+	      if (current_depth==0)
+		{
 		int8_t new_item= current_item+increment;
 		if (new_item >=N_item) new_item = N_item-1;
 		if (new_item <0) new_item = 0;
@@ -81,16 +84,38 @@ void GT_MenuParameter::update()
 		  }
 
 	      }
+	      ////// DEPTH 1
 	      if (current_depth==1)
 		{
+		  writeRightColumn(current_item,true); // erase old value
 		  switch (current_item)
 		    {
 		    case 1:
 		      parameter->incrementValue(increment);
 		      break;
 
+		    case 2:
+		      parameter->incrementProspectiveInput(increment);
+		      break;
+
+		    case 3:
+		      parameter->setMidiChannel(parameter->getMidiChannel() + increment);
+		      break;
+
+		    case 4:
+		      
+		      parameter->setMidiControl1(parameter->getMidiControl1() + increment);
+		      break;
+
+		    case 6:
+		      parameter->setMidiControl2(parameter->getMidiControl2() + increment);
+		      break;
+
+		      		      
+
 
 		    }
+		  writeRightColumn(current_item);
 		}
 	      increment = 0;
 	    }
@@ -115,10 +140,15 @@ void GT_MenuParameter::writeRightColumn(uint8_t N, bool BG_color)
     break;
   case 2:
     if (parameter->getInput()!=nullptr)
-      {uint16_t prev_color = color;
-	screen->setTextColor(parameter->getInput()->getColor());
-	screen->print(parameter->getInput()->getName());
+      {
+	if (BG_color) screen->print(parameter->getProspectiveInput()->getName()); // erase old
+	  
+	else{
+	  uint16_t prev_color = color;
+	screen->setTextColor(parameter->getProspectiveInput()->getColor());
+	screen->print(parameter->getProspectiveInput()->getName());
 	screen->setTextColor(prev_color);
+	}
       }
     break;
   case 3:
