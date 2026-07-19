@@ -11,9 +11,18 @@ void GT_Menu::start(){
 
 void GT_Menu::exit(){
   encoder->setTargetMenu(nullptr);
+  //current_item=0;
+  //current_depth=0;
+  is_active=false;
+}
+
+void GT_MenuParameter::exit(){
+  
+  //encoder->setTargetMenu(nullptr);
   current_item=0;
   current_depth=0;
-  is_active=false;
+  //is_active=false;
+  this->GT_Menu::exit();
 }
 
 

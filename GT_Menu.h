@@ -54,26 +54,7 @@ class GT_Menu
   */
   virtual void exit();
 
-  /**
-     Set the background color
-  */
-  void setBackgroundColor(uint16_t _color) {background_color = _color;}
 
-  /**
-     Set the  color
-  */
-  void setColor(uint16_t _color) {color = _color;}
-
-  /**
-     Set the height and the width of a single item
-     @param _height the new height of an element
-     @param _width the new width
-  */
-  void setItemHeightWidth(uint16_t _height,uint16_t _width)
-  {
-    item_height = _height;
-    item_width = _width;
-  }
 
   virtual void drawAll(bool BG_color=false) {}
 
@@ -87,10 +68,8 @@ class GT_Menu
   const unsigned long response_time;
   unsigned long last_update_time;
   bool is_active=false;
-  uint16_t background_color=0, color = 65535;
   const uint8_t N_item;
-  uint8_t current_item = 0, current_depth=0, old_depth=0, text_size = 1;
-  uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
+  uint8_t current_item = 0;
   int16_t increment=0;
 };
 
@@ -176,13 +155,37 @@ class GT_MenuParameter: public GT_Menu
     if (current_depth==0) current_depth=1;
     else current_depth=0;
   }
-  
+
+    /**
+     Set the background color
+  */
+  void setBackgroundColor(uint16_t _color) {background_color = _color;}
+
+  /**
+     Set the  color
+  */
+  void setColor(uint16_t _color) {color = _color;}
+
+
+    /**
+     Set the height and the width of a single item
+     @param _height the new height of an element
+     @param _width the new width
+  */
+  void setItemHeightWidth(uint16_t _height,uint16_t _width)
+  {
+    item_height = _height;
+    item_width = _width;
+  }
+
+  void exit();
 
 
   GT_Parameter * parameter=nullptr;
   int32_t old_value;
-
-
+uint16_t background_color=0, color = 65535;
+uint8_t current_depth=0, old_depth=0, text_size = 1;
+   uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
  
   
 };
