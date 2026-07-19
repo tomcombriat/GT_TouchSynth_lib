@@ -39,21 +39,21 @@ public:
   /**
      Return the select state of the element
   */
-  bool isSelected() {return selected;}
+  bool isSelected() const {return selected;}
 
 
   
   /**
      Return the preselect state of the element
   */
-  bool isPreselected() {return preselected;}
+  bool isPreselected() const {return preselected;}
 
   /**
      Returns the type of the visual element:
      1: vPot
      2: vButton
   */
-  const uint8_t getType()  {return type;}
+  const uint8_t getType() const {return type;}
   
 
   
