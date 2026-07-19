@@ -22,7 +22,7 @@ void GT_MenuParameter::exit(){
   current_item=0;
   current_depth=0;
   //is_active=false;
-  this->GT_Menu::exit();
+  GT_Menu::exit();
 }
 
 
@@ -171,3 +171,27 @@ void GT_MenuParameter::writeRightColumn(uint8_t N, bool BG_color)
     break;    
   }
 }
+
+
+
+//////////////// MAIN GUI
+
+void GT_MainGUI::start()
+{
+  is_active=true;
+}
+
+
+void GT_MainGUI::exit(){}
+
+void GT_MainGUI::update(){}
+
+void GT_MainGUI::drawAll(){}
+
+void GT_MainGUI::buttonRelease(){}
+
+void GT_MainGUI::buttonReleaseAfterLongPress(){}
+
+
+
+

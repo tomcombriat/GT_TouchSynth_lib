@@ -6,12 +6,13 @@
 #include <Adafruit_ILI9341.h>
 #include "GT_Parameter.h"
 #include "GT_Input.h"
+#include "GT_vVisualElement.h"
 
 
 /*
-TODO:
- - make the base class less specific in order to have the base screen selection as a menu also
- - simplify: menu should not necessarily have access to the screen, or the encoder. Make a main menu that dispatch encoder events: turn, pressed, long press, and starts and stops the menues.
+  TODO:
+  - make the base class less specific in order to have the base screen selection as a menu also
+  - simplify: menu should not necessarily have access to the screen, or the encoder. Make a main menu that dispatch encoder events: turn, pressed, long press, and starts and stops the menues.
 */
 
 // Forward declaration
@@ -23,11 +24,11 @@ class GT_PhysicalInput;
  */
 class GT_Menu
 {
- public:
+public:
   /**
      Constructor
   */
- GT_Menu(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder, uint8_t _N_item=0, unsigned long response_time=50): response_time{response_time}, screen{_screen}, encoder{_encoder}, N_item{_N_item} {}
+  GT_Menu(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder, uint8_t _N_item=0, unsigned long response_time=50): response_time{response_time}, screen{_screen}, encoder{_encoder}, N_item{_N_item} {}
 
 
   /** 
@@ -44,10 +45,10 @@ class GT_Menu
   /**
      Start the menu
   */
-   void start();/*{
-			 encoder->setTargetMenu(&*this);
-			 is_active=true;
-			 }*/
+  void start();/*{
+		 encoder->setTargetMenu(&*this);
+		 is_active=true;
+		 }*/
 
   /**
      Exits the menu
@@ -62,7 +63,9 @@ class GT_Menu
 
   virtual void buttonRelease() {}
 
- protected:
+  virtual void buttonReleaseAfterLongPress() {}
+
+protected:
   Adafruit_ILI9341 * const screen;
   GT_RotaryEncoder * const encoder;
   const unsigned long response_time;
@@ -80,11 +83,11 @@ class GT_Menu
 */
 class GT_MenuParameter: public GT_Menu
 {
- public:
+public:
   /**
      Constructor
   */
- GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long response_time=50): GT_Menu(_screen,_encoder,9,response_time) {}
+  GT_MenuParameter(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder,unsigned long _response_time=50): GT_Menu(_screen,_encoder,9,_response_time) {}
 
 
   void start(GT_Parameter * _parameter);
@@ -92,7 +95,7 @@ class GT_MenuParameter: public GT_Menu
   void update();
  
 
- private:
+private:
   void writeLeftColumn(uint8_t N, bool BG_color=false)
   {
     screen->setCursor(left_margin,N*item_height+top_margin);
@@ -156,7 +159,9 @@ class GT_MenuParameter: public GT_Menu
     else current_depth=0;
   }
 
-    /**
+
+
+  /**
      Set the background color
   */
   void setBackgroundColor(uint16_t _color) {background_color = _color;}
@@ -167,7 +172,7 @@ class GT_MenuParameter: public GT_Menu
   void setColor(uint16_t _color) {color = _color;}
 
 
-    /**
+  /**
      Set the height and the width of a single item
      @param _height the new height of an element
      @param _width the new width
@@ -183,15 +188,39 @@ class GT_MenuParameter: public GT_Menu
 
   GT_Parameter * parameter=nullptr;
   int32_t old_value;
-uint16_t background_color=0, color = 65535;
-uint8_t current_depth=0, old_depth=0, text_size = 1;
-   uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
+  uint16_t background_color=0, color = 65535;
+  uint8_t current_depth=0, old_depth=0, text_size = 1;
+  uint16_t item_height=15, item_width=120,top_margin=20, left_margin=15;
  
   
 };
 
 
+class GT_MainGUI: public GT_Menu
+{
+public:
+  GT_MainGUI(Adafruit_ILI9341* _screen, GT_RotaryEncoder* _encoder, uint8_t _N_item, GT_vVisualElement * _items, GT_MenuParameter * _menu_parameter, unsigned long _response_time=50): GT_Menu(_screen, _encoder, _N_item, _response_time), items{_items}, menu_parameter{_menu_parameter} {}
 
+  void start();
+
+  void exit();
+
+  void update();
+
+  void drawAll();
+
+  void buttonRelease();
+
+  void buttonReleaseAfterLongPress();
+
+
+
+private:
+  GT_vVisualElement* const items;
+  GT_MenuParameter * const menu_parameter;
+
+
+};
 
 
 #endif
