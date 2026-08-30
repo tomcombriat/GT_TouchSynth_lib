@@ -178,11 +178,26 @@ void GT_MenuParameter::writeRightColumn(uint8_t N, bool BG_color)
 
 void GT_MainGUI::start()
 {
-  is_active=true;
+  GT_Menu::start();
+  current_item=0;
+  
 }
 
 
-void GT_MainGUI::exit(){}
+void GT_MainGUI::exit(){
+  is_active=false;
+}
+
+void GT_MainGUI::incrementValue(int16_t inc){
+  /* current_item += inc;
+  if (current_item <0) current_item = N_item-1;
+  if (current_item > N_item-1) current_item =0;*/
+  
+  if (items[current_item].isSelected() && items[current_item].getType()==1) //vPot
+    {
+      items[current_item].getAttachedParameter()->incrementProspectiveInput(inc); /// I STOOPED HERE
+    }
+}
 
 void GT_MainGUI::update(){}
 

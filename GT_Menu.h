@@ -2,11 +2,12 @@
 #define GT_MENU_H_
 
 //#include "GT_Input.h" // for the encoder
+#include "GT_vVisualElement.h"
 #include <Adafruit_GFX.h> // for the screen
 #include <Adafruit_ILI9341.h>
 #include "GT_Parameter.h"
 #include "GT_Input.h"
-#include "GT_vVisualElement.h"
+
 
 
 /*
@@ -54,8 +55,6 @@ public:
      Exits the menu
   */
   virtual void exit();
-
-
 
   virtual void drawAll(bool BG_color=false) {}
 
@@ -195,6 +194,7 @@ private:
   
 };
 
+class GT_vVisualElement;  // to avoid compilation problem
 
 class GT_MainGUI: public GT_Menu
 {
@@ -204,6 +204,8 @@ public:
   void start();
 
   void exit();
+
+  void incrementValue(int16_t);
 
   void update();
 

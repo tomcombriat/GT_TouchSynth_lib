@@ -13,6 +13,12 @@
 #define vButton 2
 
 #include <Adafruit_GFX.h>
+#include <Adafruit_ILI9341.h>
+#include "GT_Parameter.h"
+
+
+class GT_Parameter; // to avoid compilation problem
+
 
 class GT_vVisualElement
 {
@@ -54,6 +60,10 @@ public:
      2: vButton
   */
   const uint8_t getType() const {return type;}
+
+  GT_Parameter * getAttachedParameter() const {return nullptr;}
+
+  
   
 
   
